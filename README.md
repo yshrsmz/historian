@@ -23,6 +23,8 @@ class App extends Application {
             .size(500)
             // queue logs until specified logs collected, so that db operation is minimized. defaults to 10
             .queueSize(10)
+            // log level to save
+            .logLevel(Log.INFO)
             .build();
 
         // initialize historian
