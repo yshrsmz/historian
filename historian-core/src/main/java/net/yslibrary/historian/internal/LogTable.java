@@ -4,7 +4,7 @@ package net.yslibrary.historian.internal;
  * Created by yshrsmz on 17/01/20.
  */
 
-public class LogTable {
+class LogTable {
 
   public static final String NAME = "log";
 

@@ -6,8 +6,8 @@ import android.util.Log;
 
 import net.yslibrary.historian.internal.DbOpenHelper;
 import net.yslibrary.historian.internal.LogQueue;
-import net.yslibrary.historian.internal.LogTable;
 import net.yslibrary.historian.internal.LogWriter;
+import net.yslibrary.historian.internal.LogWritingTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,17 +73,26 @@ public class Historian {
   public void initialize() {
     if (initialized) return;
 
-    SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
-    db.execSQL(LogTable.INSERT, new Object[]{"DEBUG", "TEST", System.currentTimeMillis()});
+    dbOpenHelper.getWritableDatabase();
+
     initialized = true;
   }
 
   public void log(int priority, String message) {
     checkInitialized();
+
+    if (priority < logLevel) return;
+
+    queue.queue(LogEntity.create(priority, message, System.currentTimeMillis()));
+
+    if (!queue.isExceeded()) return;
+
+    new LogWritingTask(logWriter).execute(queue);
   }
 
   public void flush() {
     checkInitialized();
+    logWriter.log(queue);
   }
 
   public void terminate() {
@@ -92,6 +101,7 @@ public class Historian {
 
   public void delete() {
     checkInitialized();
+    logWriter.delete();
   }
 
   public String dbPath() {
@@ -103,7 +113,7 @@ public class Historian {
     }
   }
 
-  public SQLiteDatabase getDatabase() {
+  SQLiteDatabase getDatabase() {
     checkInitialized();
     return dbOpenHelper.getReadableDatabase();
   }

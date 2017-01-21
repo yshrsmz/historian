@@ -3,6 +3,7 @@ package net.yslibrary.historian.internal;
 import net.yslibrary.historian.LogEntity;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,8 +21,20 @@ public class LogQueue {
     this.queue = Collections.synchronizedList(new ArrayList<LogEntity>());
   }
 
+  public int size() {
+    return queue.size();
+  }
+
+  public boolean isEmpty() {
+    return queue.isEmpty();
+  }
+
   public boolean isExceeded() {
     return queue.size() > size;
+  }
+
+  public void queue(LogEntity logEntity) {
+    queue.add(logEntity);
   }
 
   public List<LogEntity> dequeue() {
@@ -37,5 +50,13 @@ public class LogQueue {
       return dequeue();
     }
     return Collections.emptyList();
+  }
+
+  public LogEntity get(int index) {
+    return queue.get(index);
+  }
+
+  public boolean removeAll(Collection<LogEntity> list) {
+    return queue.removeAll(list);
   }
 }
