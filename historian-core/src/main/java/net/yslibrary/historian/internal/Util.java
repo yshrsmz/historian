@@ -8,26 +8,26 @@ import android.util.Log;
 
 public class Util {
 
-    private Util() {
-        // no-op
-    }
+  private Util() {
+    // no-op
+  }
 
-    public static String priorityString(int priority) {
-        switch (priority) {
-            case Log.VERBOSE:
-                return "VERBOSE";
-            case Log.DEBUG:
-                return "DEBUG";
-            case Log.INFO:
-                return "INFO";
-            case Log.WARN:
-                return "WARN";
-            case Log.ERROR:
-                return "ERROR";
-            case Log.ASSERT:
-                return "ASSERT";
-            default:
-                return "UNKNOWN";
-        }
+  public static String priorityString(int priority) {
+    switch (priority) {
+      case Log.VERBOSE:
+        return "VERBOSE";
+      case Log.DEBUG:
+        return "DEBUG";
+      case Log.INFO:
+        return "INFO";
+      case Log.WARN:
+        return "WARN";
+      case Log.ERROR:
+        return "ERROR";
+      case Log.ASSERT:
+        return "ASSERT";
+      default:
+        return "UNKNOWN";
     }
+  }
 }

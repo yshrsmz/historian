@@ -1,34 +1,35 @@
 apply plugin: 'com.android.application'
 
+apply from: '../gradle/dependencies.gradle'
+
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
-    defaultConfig {
-        applicationId "net.yslibrary.historian.sample"
-        minSdkVersion 15
-        targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+  compileSdkVersion 25
+  buildToolsVersion "25.0.2"
+  defaultConfig {
+    applicationId "net.yslibrary.historian.sample"
+    minSdkVersion 15
+    targetSdkVersion 25
+    versionCode 1
+    versionName "1.0"
+    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+  }
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
+  }
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:25.1.0'
-    compile 'com.android.support:design:25.1.0'
-    compile 'com.facebook.stetho:stetho:1.4.2'
+  compile deps.appcompat
+  compile deps.design
+  compile deps.stetho
+  compile deps.timber
+  compile project(':historian-core')
 
-    compile 'com.jakewharton.timber:timber:4.5.0'
-    compile project(':historian-core')
-
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    testCompile 'junit:junit:4.12'
+  androidTestCompile(deps.espresso, {
+    exclude group: 'com.android.support', module: 'support-annotations'
+  })
+  testCompile deps.junit
 }

@@ -10,38 +10,38 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DbOpenHelper extends SQLiteOpenHelper {
 
-    public static final int DB_VERSION = 1;
+  public static final int DB_VERSION = 1;
 
 
-    public DbOpenHelper(Context context, String name) {
-        super(context, name, null, DB_VERSION);
+  public DbOpenHelper(Context context, String name) {
+    super(context, name, null, DB_VERSION);
+  }
+
+  @Override
+  public void onCreate(SQLiteDatabase db) {
+    db.execSQL(LogTable.CREATE_TABLE);
+  }
+
+  @Override
+  public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+  }
+
+  public void executeTransaction(Transaction transaction) {
+    SQLiteDatabase db = null;
+    try {
+      db = getWritableDatabase();
+      db.beginTransaction();
+
+      transaction.call(db);
+
+      db.setTransactionSuccessful();
+    } finally {
+      if (db != null) db.endTransaction();
     }
+  }
 
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-        db.execSQL(LogTable.CREATE_TABLE);
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
-    }
-
-    public void executeTransaction(Transaction transaction) {
-        SQLiteDatabase db = null;
-        try {
-            db = getWritableDatabase();
-            db.beginTransaction();
-
-            transaction.call(db);
-
-            db.setTransactionSuccessful();
-        } finally {
-            if (db != null) db.endTransaction();
-        }
-    }
-
-    interface Transaction {
-        void call(SQLiteDatabase db);
-    }
+  interface Transaction {
+    void call(SQLiteDatabase db);
+  }
 }

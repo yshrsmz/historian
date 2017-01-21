@@ -18,169 +18,169 @@ import java.io.IOException;
 
 public class Historian {
 
-    private static final String DB_NAME = "log.db";
-    private static final int SIZE = 500;
-    private static final int QUEUE_SIZE = 10;
-    private static final int LOG_LEVEL = Log.INFO;
+  private static final String DB_NAME = "log.db";
+  private static final int SIZE = 500;
+  private static final int QUEUE_SIZE = 10;
+  private static final int LOG_LEVEL = Log.INFO;
 
-    private final DbOpenHelper dbOpenHelper;
-    private final LogWriter logWriter;
-    private final LogQueue queue;
+  private final DbOpenHelper dbOpenHelper;
+  private final LogWriter logWriter;
+  private final LogQueue queue;
+
+  private final Context context;
+  private final File directory;
+  private final String dbName;
+  private final int size;
+  private final int queueSize;
+  private final int logLevel;
+
+  private boolean initialized = false;
+
+  private Historian(Context context,
+                    File directory,
+                    String name, int size, int queueSize, int logLevel) {
+    this.context = context;
+    this.directory = directory;
+    this.dbName = name;
+    this.size = size;
+    this.queueSize = queueSize;
+    this.logLevel = logLevel;
+
+    checkAndCreateDir(directory);
+    try {
+      dbOpenHelper = new DbOpenHelper(context, directory.getCanonicalPath() + File.pathSeparator + name);
+    } catch (IOException e) {
+      throw new HistorianFileException("Could not resolve the canonical path to the Historian DB file: " + directory.getAbsolutePath(), e);
+    }
+
+    logWriter = new LogWriter(dbOpenHelper, size);
+    queue = new LogQueue(queueSize);
+  }
+
+  /**
+   * Get Builder
+   *
+   * @param context Context
+   * @return
+   */
+  public static Builder builder(Context context) {
+    return new Builder(context);
+  }
+
+  /**
+   * initialize
+   */
+  public void initialize() {
+    if (initialized) return;
+
+    SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+    db.execSQL(LogTable.INSERT, new Object[]{"DEBUG", "TEST", System.currentTimeMillis()});
+    initialized = true;
+  }
+
+  public void log(int priority, String message) {
+    checkInitialized();
+  }
+
+  public void flush() {
+    checkInitialized();
+  }
+
+  public void terminate() {
+    checkInitialized();
+  }
+
+  public void delete() {
+    checkInitialized();
+  }
+
+  public String dbPath() {
+    checkInitialized();
+    try {
+      return directory.getCanonicalPath() + File.separator + dbName;
+    } catch (IOException e) {
+      throw new HistorianFileException("Could not resolve the canonical path to the Historian DB file: " + directory.getAbsolutePath(), e);
+    }
+  }
+
+  public SQLiteDatabase getDatabase() {
+    checkInitialized();
+    return dbOpenHelper.getReadableDatabase();
+  }
+
+  @SuppressWarnings("ResultOfMethodCallIgnored")
+  private void checkAndCreateDir(File file) {
+    if (!file.exists()) file.mkdir();
+  }
+
+  /**
+   * throw if {@link Historian#initialize()} is not called.
+   */
+  private void checkInitialized() {
+    if (!initialized) throw new IllegalStateException("Historian#initialize is not called");
+  }
+
+
+  /**
+   * Build class for {@link net.yslibrary.historian.Historian}
+   */
+  public static class Builder {
 
     private final Context context;
-    private final File directory;
-    private final String dbName;
-    private final int size;
-    private final int queueSize;
-    private final int logLevel;
+    private File directory;
+    private String name = DB_NAME;
+    private int size = SIZE;
+    private int queueSize = QUEUE_SIZE;
+    private int logLevel = LOG_LEVEL;
 
-    private boolean initialized = false;
-
-    private Historian(Context context,
-                      File directory,
-                      String name, int size, int queueSize, int logLevel) {
-        this.context = context;
-        this.directory = directory;
-        this.dbName = name;
-        this.size = size;
-        this.queueSize = queueSize;
-        this.logLevel = logLevel;
-
-        checkAndCreateDir(directory);
-        try {
-            dbOpenHelper = new DbOpenHelper(context, directory.getCanonicalPath() + File.pathSeparator + name);
-        } catch (IOException e) {
-            throw new HistorianFileException("Could not resolve the canonical path to the Historian DB file: " + directory.getAbsolutePath(), e);
-        }
-
-        logWriter = new LogWriter(dbOpenHelper, size);
-        queue = new LogQueue(queueSize);
+    Builder(Context context) {
+      this.context = context.getApplicationContext();
+      directory = context.getFilesDir();
     }
 
     /**
-     * Get Builder
+     * Specify a directory where Historian's Database file is stored.
      *
-     * @param context Context
+     * @param directory
      * @return
      */
-    public static Builder builder(Context context) {
-        return new Builder(context);
+    public Builder directory(File directory) {
+      this.directory = directory;
+      return this;
     }
 
     /**
-     * initialize
+     * Specify a name of the Historian's Database file
+     *
+     * @param name
+     * @return
      */
-    public void initialize() {
-        if (initialized) return;
-
-        SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
-        db.execSQL(LogTable.INSERT, new Object[]{"DEBUG", "TEST", System.currentTimeMillis()});
-        initialized = true;
+    public Builder name(String name) {
+      this.name = name;
+      return this;
     }
 
-    public void log(int priority, String message) {
-        checkInitialized();
+    public Builder size(int size) {
+      if (size < 0) throw new IllegalArgumentException("size should be 0 or greater");
+      this.size = size;
+      return this;
     }
 
-    public void flush() {
-        checkInitialized();
+    public Builder queueSize(int queueSize) {
+      if (queueSize < 0)
+        throw new IllegalArgumentException("queueSize should be 0 or greater");
+      this.queueSize = queueSize;
+      return this;
     }
 
-    public void terminate() {
-        checkInitialized();
-    }
-
-    public void delete() {
-        checkInitialized();
-    }
-
-    public String dbPath() {
-        checkInitialized();
-        try {
-            return directory.getCanonicalPath() + File.separator + dbName;
-        } catch (IOException e) {
-            throw new HistorianFileException("Could not resolve the canonical path to the Historian DB file: " + directory.getAbsolutePath(), e);
-        }
-    }
-
-    public SQLiteDatabase getDatabase() {
-        checkInitialized();
-        return dbOpenHelper.getReadableDatabase();
-    }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void checkAndCreateDir(File file) {
-        if (!file.exists()) file.mkdir();
-    }
-
-    /**
-     * throw if {@link Historian#initialize()} is not called.
-     */
-    private void checkInitialized() {
-        if (!initialized) throw new IllegalStateException("Historian#initialize is not called");
+    public Builder logLevel(int logLevel) {
+      this.logLevel = logLevel;
+      return this;
     }
 
 
-    /**
-     * Build class for {@link net.yslibrary.historian.Historian}
-     */
-    public static class Builder {
-
-        private final Context context;
-        private File directory;
-        private String name = DB_NAME;
-        private int size = SIZE;
-        private int queueSize = QUEUE_SIZE;
-        private int logLevel = LOG_LEVEL;
-
-        Builder(Context context) {
-            this.context = context.getApplicationContext();
-            directory = context.getFilesDir();
-        }
-
-        /**
-         * Specify a directory where Historian's Database file is stored.
-         *
-         * @param directory
-         * @return
-         */
-        public Builder directory(File directory) {
-            this.directory = directory;
-            return this;
-        }
-
-        /**
-         * Specify a name of the Historian's Database file
-         *
-         * @param name
-         * @return
-         */
-        public Builder name(String name) {
-            this.name = name;
-            return this;
-        }
-
-        public Builder size(int size) {
-            if (size < 0) throw new IllegalArgumentException("size should be 0 or greater");
-            this.size = size;
-            return this;
-        }
-
-        public Builder queueSize(int queueSize) {
-            if (queueSize < 0)
-                throw new IllegalArgumentException("queueSize should be 0 or greater");
-            this.queueSize = queueSize;
-            return this;
-        }
-
-        public Builder logLevel(int logLevel) {
-            this.logLevel = logLevel;
-            return this;
-        }
-
-
-        public Historian build() {
-            return new Historian(context, directory, name, size, queueSize, logLevel);
-        }
+    public Historian build() {
+      return new Historian(context, directory, name, size, queueSize, logLevel);
     }
+  }
 }
