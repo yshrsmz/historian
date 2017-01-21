@@ -24,7 +24,7 @@ android {
 }
 
 dependencies {
-  compile deps.appcompat
+  compile project(':historian-core')
   provided deps.timber
 
   androidTestCompile(deps.espresso, {
