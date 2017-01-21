@@ -27,6 +27,7 @@ dependencies {
   compile deps.stetho
   compile deps.timber
   compile project(':historian-core')
+  compile project(':historian-tree')
 
   androidTestCompile(deps.espresso, {
     exclude group: 'com.android.support', module: 'support-annotations'

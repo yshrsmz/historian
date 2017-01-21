@@ -30,7 +30,7 @@ class App extends Application {
         // initialize historian
         historian.initialize();
 
-        Timber.plant(LogHistorianTree.with(historian))
+        Timber.plant(LogHistorianTree.with(historian));
 
         // immediately save queued logs
         historian.flush();
