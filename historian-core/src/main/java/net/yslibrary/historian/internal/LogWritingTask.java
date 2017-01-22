@@ -20,10 +20,14 @@ public class LogWritingTask extends AsyncTask<LogQueue, Void, Void> {
 
   @Override
   protected final Void doInBackground(LogQueue... params) {
-    List<LogEntity> saved = logWriter.log(params[0]);
+    try {
+      List<LogEntity> saved = logWriter.log(params[0]);
 
-    if (!saved.isEmpty()) {
-      params[0].removeAll(saved);
+      if (!saved.isEmpty()) {
+        params[0].removeAll(saved);
+      }
+    } catch (Exception e) {
+
     }
 
     return null;

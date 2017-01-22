@@ -31,4 +31,5 @@ dependencies {
   })
 
   testCompile deps.junit
+  testCompile deps.robolectric
 }

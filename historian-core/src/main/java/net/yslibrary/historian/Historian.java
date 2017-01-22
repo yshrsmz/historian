@@ -18,23 +18,23 @@ import java.io.IOException;
 
 public class Historian {
 
-  private static final String DB_NAME = "log.db";
-  private static final int SIZE = 500;
-  private static final int QUEUE_SIZE = 10;
-  private static final int LOG_LEVEL = Log.INFO;
+  static final String DB_NAME = "log.db";
+  static final int SIZE = 500;
+  static final int QUEUE_SIZE = 10;
+  static final int LOG_LEVEL = Log.INFO;
 
-  private final DbOpenHelper dbOpenHelper;
-  private final LogWriter logWriter;
-  private final LogQueue queue;
+  final DbOpenHelper dbOpenHelper;
+  final LogWriter logWriter;
+  final LogQueue queue;
 
-  private final Context context;
-  private final File directory;
-  private final String dbName;
-  private final int size;
-  private final int queueSize;
-  private final int logLevel;
+  final Context context;
+  final File directory;
+  final String dbName;
+  final int size;
+  final int queueSize;
+  final int logLevel;
 
-  private boolean initialized = false;
+  boolean initialized = false;
 
   private Historian(Context context,
                     File directory,
@@ -48,7 +48,7 @@ public class Historian {
 
     checkAndCreateDir(directory);
     try {
-      dbOpenHelper = new DbOpenHelper(context, directory.getCanonicalPath() + File.pathSeparator + name);
+      dbOpenHelper = new DbOpenHelper(context, directory.getCanonicalPath() + File.separator + name);
     } catch (IOException e) {
       throw new HistorianFileException("Could not resolve the canonical path to the Historian DB file: " + directory.getAbsolutePath(), e);
     }
@@ -97,6 +97,7 @@ public class Historian {
 
   public void terminate() {
     checkInitialized();
+    logWriter.log(queue);
   }
 
   public void delete() {
