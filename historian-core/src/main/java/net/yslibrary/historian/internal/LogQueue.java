@@ -30,7 +30,7 @@ public class LogQueue {
   }
 
   public boolean isExceeded() {
-    return queue.size() > size;
+    return queue.size() >= size;
   }
 
   public void queue(LogEntity logEntity) {
