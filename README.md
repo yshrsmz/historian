@@ -9,11 +9,11 @@ This library is primarily made to help debugging crash in consumers' devices.
 ```java
 class App extends Application {
 
-    LogHistorian historian;
+    Historian historian;
 
     @Override
     public void onCreate() {
-        historian = LogHistorian.builder(context)
+        historian = Historian.builder(context)
             // db name. defaults to "log.db"
             .name("log.db")
             // a directory where the db file will be saved. defaults to `context.getFiles()`.
@@ -50,6 +50,13 @@ class App extends Application {
 }
 ```
 
+```
+CREATE TABLE log(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  priority TEXT,
+  message TEXT,
+  timestamp INTEGER
+);
 
 INSERT INTO log(priority, message, timestamp) VALUES("DEBUG", "message2", 12346);
 INSERT INTO log(priority, message, timestamp) VALUES("DEBUG", "message3", 12347);
@@ -63,7 +70,5 @@ INSERT INTO log(priority, message, timestamp) VALUES("DEBUG", "message10", 12354
 INSERT INTO log(priority, message, timestamp) VALUES("DEBUG", "message11", 12355);
 
 
-DELETE FROM log WHERE id NOT IN
-  (SELECT id FROM
-     (SELECT id FROM log ORDER BY timestamp DESC LIMIT 5)
-   )
+DELETE FROM log WHERE id NOT IN (SELECT id FROM log ORDER BY timestamp DESC LIMIT 5)
+```
