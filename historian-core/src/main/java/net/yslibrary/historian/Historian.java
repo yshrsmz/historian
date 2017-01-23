@@ -90,16 +90,33 @@ public class Historian {
     new LogWritingTask(logWriter).execute(queue);
   }
 
+  /**
+   * Save cached logs to SQLite.
+   * This operation is blocking.
+   */
   public void flush() {
     checkInitialized();
     logWriter.log(queue);
   }
 
+  /**
+   * Terminate Historian
+   * This method should only be called from {@link android.app.Application#onTerminate()}.
+   * This method will perform;
+   * - write all cached {@link net.yslibrary.historian.LogEntity} to SQLite(this is blocking operation)
+   * - close underlying {@link net.yslibrary.historian.internal.DbOpenHelper}
+   * <p>
+   * After calling this method, all calls to this instance of {@link net.yslibrary.historian.Historian}
+   * can produce exception or undefined behavior.
+   */
   public void terminate() {
     checkInitialized();
     logWriter.log(queue);
   }
 
+  /**
+   * delete cache
+   */
   public void delete() {
     checkInitialized();
     logWriter.delete();

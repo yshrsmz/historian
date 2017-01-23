@@ -3,7 +3,7 @@ package net.yslibrary.historian;
 import android.database.Cursor;
 
 /**
- * Created by yshrsmz on 2017/01/23.
+ * Utility methods for {@link android.database.Cursor}
  */
 
 public class Cursors {

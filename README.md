@@ -58,6 +58,24 @@ CREATE TABLE log(
   timestamp INTEGER
 );
 
+CREATE TABLE log(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  priority TEXT,
+  message TEXT,
+  timestamp TIMESTAMP DEFAULT (DATETIME('now', 'localtime'))
+);
+
+INSERT INTO log(priority, message) VALUES("DEBUG", "message2");
+INSERT INTO log(priority, message) VALUES("DEBUG", "message3");
+INSERT INTO log(priority, message) VALUES("DEBUG", "message4");
+INSERT INTO log(priority, message) VALUES("DEBUG", "message5");
+INSERT INTO log(priority, message) VALUES("DEBUG", "message6");
+INSERT INTO log(priority, message) VALUES("DEBUG", "message7");
+INSERT INTO log(priority, message) VALUES("DEBUG", "message8");
+INSERT INTO log(priority, message) VALUES("DEBUG", "message9");
+INSERT INTO log(priority, message) VALUES("DEBUG", "message10");
+INSERT INTO log(priority, message) VALUES("DEBUG", "message11");
+
 INSERT INTO log(priority, message, timestamp) VALUES("DEBUG", "message2", 12346);
 INSERT INTO log(priority, message, timestamp) VALUES("DEBUG", "message3", 12347);
 INSERT INTO log(priority, message, timestamp) VALUES("DEBUG", "message4", 12348);
