@@ -56,6 +56,10 @@ public class LogQueue {
     return queue.get(index);
   }
 
+  public void clear() {
+    queue.clear();
+  }
+
   public boolean removeAll(Collection<LogEntity> list) {
     return queue.removeAll(list);
   }

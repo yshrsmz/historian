@@ -35,14 +35,14 @@ public class HistorianBuilderTest {
     assertNotNull(historian.logWriter);
     assertNotNull(historian.queue);
 
-    String path = File.separator + "private" + context.getFilesDir() + File.separator + Historian.DB_NAME;
+    String path = context.getFilesDir() + File.separator + Historian.DB_NAME;
     assertEquals(historian.dbOpenHelper.getDatabaseName(), path);
 
-    assertEquals(historian.logLevel, Historian.LOG_LEVEL);
-    assertEquals(historian.directory, context.getFilesDir());
-    assertEquals(historian.dbName, Historian.DB_NAME);
-    assertEquals(historian.size, Historian.SIZE);
-    assertEquals(historian.queueSize, Historian.QUEUE_SIZE);
+    assertEquals(Historian.LOG_LEVEL, historian.logLevel);
+    assertEquals(context.getFilesDir(), historian.directory);
+    assertEquals(Historian.DB_NAME, historian.dbName);
+    assertEquals(Historian.SIZE, historian.size);
+    assertEquals(Historian.QUEUE_SIZE, historian.queueSize);
   }
 
   @Test
@@ -60,13 +60,13 @@ public class HistorianBuilderTest {
     assertNotNull(historian.logWriter);
     assertNotNull(historian.queue);
 
-    String path = File.separator + "private" + context.getExternalFilesDir(null) + File.separator + "test.db";
-    assertEquals(historian.dbOpenHelper.getDatabaseName(), path);
+    String path = context.getExternalFilesDir(null) + File.separator + "test.db";
+    assertEquals(path, historian.dbOpenHelper.getDatabaseName());
 
-    assertEquals(historian.logLevel, Log.DEBUG);
-    assertEquals(historian.directory, context.getExternalFilesDir(null));
-    assertEquals(historian.dbName, "test.db");
-    assertEquals(historian.size, 1000);
-    assertEquals(historian.queueSize, 50);
+    assertEquals(Log.DEBUG, historian.logLevel);
+    assertEquals(context.getExternalFilesDir(null), historian.directory);
+    assertEquals("test.db", historian.dbName);
+    assertEquals(1000, historian.size);
+    assertEquals(50, historian.queueSize);
   }
 }

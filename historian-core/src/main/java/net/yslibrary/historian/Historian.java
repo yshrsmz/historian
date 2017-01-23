@@ -11,6 +11,8 @@ import net.yslibrary.historian.internal.LogWritingTask;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by yshrsmz on 17/01/20.
@@ -23,6 +25,7 @@ public class Historian {
   static final int QUEUE_SIZE = 10;
   static final int LOG_LEVEL = Log.INFO;
 
+  final ExecutorService executorService;
   final DbOpenHelper dbOpenHelper;
   final LogWriter logWriter;
   final LogQueue queue;
@@ -46,13 +49,14 @@ public class Historian {
     this.queueSize = queueSize;
     this.logLevel = logLevel;
 
-    checkAndCreateDir(directory);
+    createDirIfNeeded(directory);
     try {
       dbOpenHelper = new DbOpenHelper(context, directory.getCanonicalPath() + File.separator + name);
     } catch (IOException e) {
       throw new HistorianFileException("Could not resolve the canonical path to the Historian DB file: " + directory.getAbsolutePath(), e);
     }
 
+    executorService = Executors.newSingleThreadExecutor();
     logWriter = new LogWriter(dbOpenHelper, size);
     queue = new LogQueue(queueSize);
   }
@@ -87,7 +91,13 @@ public class Historian {
 
     if (!queue.isExceeded()) return;
 
-    new LogWritingTask(logWriter).execute(queue);
+//    Future<?> future = executorService.submit();
+    executorService.execute(new LogWritingTask(logWriter, queue));
+//    try {
+//      future.get();
+//    } catch (Exception e) {
+//      throw new HistorianException(e);
+//    }
   }
 
   /**
@@ -112,6 +122,7 @@ public class Historian {
   public void terminate() {
     checkInitialized();
     logWriter.log(queue);
+    dbOpenHelper.close();
   }
 
   /**
@@ -119,7 +130,7 @@ public class Historian {
    */
   public void delete() {
     checkInitialized();
-    logWriter.delete();
+    logWriter.delete(queue);
   }
 
   public String dbPath() {
@@ -137,7 +148,7 @@ public class Historian {
   }
 
   @SuppressWarnings("ResultOfMethodCallIgnored")
-  private void checkAndCreateDir(File file) {
+  private void createDirIfNeeded(File file) {
     if (!file.exists()) file.mkdir();
   }
 

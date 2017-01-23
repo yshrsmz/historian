@@ -23,7 +23,7 @@ public class LogWriter {
     this.size = size;
   }
 
-  public List<LogEntity> log(final LogQueue queue) {
+  public void log(final LogQueue queue) {
     final List<LogEntity> saved = new ArrayList<>();
     dbOpenHelper.executeTransaction(new DbOpenHelper.Transaction() {
       @Override
@@ -46,16 +46,24 @@ public class LogWriter {
         SQLiteStatement deleteStatement = db.compileStatement(LogTable.DELETE_OLDER);
         deleteStatement.bindLong(1, (long) size);
         deleteStatement.execute();
+
+        // remove saved logs from cache
+        queue.removeAll(saved);
       }
     });
-    return saved;
   }
 
-  public void delete() {
+  /**
+   * Clear both logs in SQLite and cached logs.
+   *
+   * @param queue
+   */
+  public void delete(final LogQueue queue) {
     dbOpenHelper.executeTransaction(new DbOpenHelper.Transaction() {
       @Override
       public void call(SQLiteDatabase db) {
         db.delete(LogTable.NAME, null, new String[]{});
+        queue.clear();
       }
     });
   }
