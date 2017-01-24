@@ -107,8 +107,7 @@ public class HistorianTest {
     assertEquals("ERROR", historian.queue.get(0).priority);
     assertEquals("this is error5", historian.queue.get(0).message);
 
-    SQLiteDatabase db = historian.dbOpenHelper.getReadableDatabase();
-    Cursor cursor = db.query("log", new String[]{"id", "priority", "message", "timestamp"}, null, null, null, null, "timestamp ASC");
+    Cursor cursor = getAllLogs(historian);
 
     assertEquals(10, cursor.getCount());
 
@@ -176,5 +175,14 @@ public class HistorianTest {
     });
 
     future.get();
+
+    Cursor cursor = getAllLogs(historian);
+
+    assertEquals(10, cursor.getCount());
+  }
+
+  Cursor getAllLogs(Historian historian) {
+    SQLiteDatabase db = historian.dbOpenHelper.getReadableDatabase();
+    return db.query("log", new String[]{"id", "priority", "message", "timestamp"}, null, null, null, null, "timestamp ASC");
   }
 }

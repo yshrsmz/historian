@@ -8,9 +8,11 @@ import net.yslibrary.historian.internal.DbOpenHelper;
 import net.yslibrary.historian.internal.LogQueue;
 import net.yslibrary.historian.internal.LogWriter;
 import net.yslibrary.historian.internal.LogWritingTask;
+import net.yslibrary.historian.internal.MainThreadExecutor;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -25,6 +27,7 @@ public class Historian {
   static final int QUEUE_SIZE = 10;
   static final int LOG_LEVEL = Log.INFO;
 
+  final Executor callbackExecutor;
   final ExecutorService executorService;
   final DbOpenHelper dbOpenHelper;
   final LogWriter logWriter;
@@ -56,6 +59,7 @@ public class Historian {
       throw new HistorianFileException("Could not resolve the canonical path to the Historian DB file: " + directory.getAbsolutePath(), e);
     }
 
+    callbackExecutor = new MainThreadExecutor();
     executorService = Executors.newSingleThreadExecutor();
     logWriter = new LogWriter(dbOpenHelper, size);
     queue = new LogQueue(queueSize);
@@ -91,13 +95,7 @@ public class Historian {
 
     if (!queue.isExceeded()) return;
 
-//    Future<?> future = executorService.submit();
-    executorService.execute(new LogWritingTask(logWriter, queue));
-//    try {
-//      future.get();
-//    } catch (Exception e) {
-//      throw new HistorianException(e);
-//    }
+    executorService.execute(new LogWritingTask(callbackExecutor, logWriter, queue));
   }
 
   /**
