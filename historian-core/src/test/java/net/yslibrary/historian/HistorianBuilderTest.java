@@ -33,7 +33,6 @@ public class HistorianBuilderTest {
     assertNotNull(historian.context);
     assertNotNull(historian.dbOpenHelper);
     assertNotNull(historian.logWriter);
-    assertNotNull(historian.queue);
 
     String path = context.getFilesDir() + File.separator + Historian.DB_NAME;
     assertEquals(historian.dbOpenHelper.getDatabaseName(), path);
@@ -42,7 +41,6 @@ public class HistorianBuilderTest {
     assertEquals(context.getFilesDir(), historian.directory);
     assertEquals(Historian.DB_NAME, historian.dbName);
     assertEquals(Historian.SIZE, historian.size);
-    assertEquals(Historian.QUEUE_SIZE, historian.queueSize);
   }
 
   @Test
@@ -51,14 +49,12 @@ public class HistorianBuilderTest {
         .name("test.db")
         .directory(context.getExternalFilesDir(null))
         .logLevel(Log.DEBUG)
-        .queueSize(50)
         .size(1000)
         .build();
 
     assertNotNull(historian.context);
     assertNotNull(historian.dbOpenHelper);
     assertNotNull(historian.logWriter);
-    assertNotNull(historian.queue);
 
     String path = context.getExternalFilesDir(null) + File.separator + "test.db";
     assertEquals(path, historian.dbOpenHelper.getDatabaseName());
@@ -67,6 +63,5 @@ public class HistorianBuilderTest {
     assertEquals(context.getExternalFilesDir(null), historian.directory);
     assertEquals("test.db", historian.dbName);
     assertEquals(1000, historian.size);
-    assertEquals(50, historian.queueSize);
   }
 }

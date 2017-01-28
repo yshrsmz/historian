@@ -48,108 +48,42 @@ public class HistorianTest {
     historian.log(Log.DEBUG, "this is debug1");
     historian.log(Log.DEBUG, "this is debug2");
 
-    assertEquals(historian.queue.size(), 0);
+    Cursor result = getAllLogs(historian);
+
+    assertEquals(0, result.getCount());
   }
 
   @Test
-  public void log_queue_over_logLevel() {
+  public void log_queue_over_logLevel() throws InterruptedException {
     historian.initialize();
 
     historian.log(Log.INFO, "this is info1");
-    historian.log(Log.DEBUG, "this is debug2");
+    historian.log(Log.DEBUG, "this is debug1");
     historian.log(Log.INFO, "this is info2");
-    historian.log(Log.INFO, "this is info3");
     historian.log(Log.WARN, "this is warn1");
-    historian.log(Log.WARN, "this is warn2");
-    historian.log(Log.WARN, "this is warn3");
     historian.log(Log.ERROR, "this is error1");
-    historian.log(Log.ERROR, "this is error2");
-    historian.log(Log.ERROR, "this is error3");
-    historian.log(Log.DEBUG, "this is debug2");
 
-
-    assertEquals(9, historian.queue.size());
-    assertEquals("this is info1", historian.queue.get(0).message);
-    assertEquals("this is info2", historian.queue.get(1).message);
-    assertEquals("this is info3", historian.queue.get(2).message);
-    assertEquals("this is warn1", historian.queue.get(3).message);
-    assertEquals("this is warn2", historian.queue.get(4).message);
-    assertEquals("this is warn3", historian.queue.get(5).message);
-    assertEquals("this is error1", historian.queue.get(6).message);
-    assertEquals("this is error2", historian.queue.get(7).message);
-    assertEquals("this is error3", historian.queue.get(8).message);
-  }
-
-  @Test
-  public void log_saved() throws InterruptedException {
-    historian.initialize();
-
-    historian.log(Log.INFO, "this is info1");
-    historian.log(Log.DEBUG, "this is debug2");
-    historian.log(Log.INFO, "this is info2");
-    historian.log(Log.INFO, "this is info3");
-    historian.log(Log.WARN, "this is warn1");
-    historian.log(Log.WARN, "this is warn2");
-    historian.log(Log.WARN, "this is warn3");
-    historian.log(Log.ERROR, "this is error1");
-    historian.log(Log.ERROR, "this is error2");
-    historian.log(Log.ERROR, "this is error3");
-    historian.log(Log.DEBUG, "this is debug2");
-    historian.log(Log.ERROR, "this is error4");
-
-    // wait for sqlite operation in background
     Thread.sleep(500);
-
-    historian.log(Log.ERROR, "this is error5");
-
-    // queue size is 10, so 1 log should remain in the queue
-    assertEquals(1, historian.queue.size());
-    assertEquals("ERROR", historian.queue.get(0).priority);
-    assertEquals("this is error5", historian.queue.get(0).message);
 
     Cursor cursor = getAllLogs(historian);
 
-    assertEquals(10, cursor.getCount());
+    assertEquals(4, cursor.getCount());
 
     cursor.moveToFirst();
     assertEquals("INFO", Cursors.getString(cursor, "priority"));
-    assertEquals(Cursors.getString(cursor, "message"), "this is info1");
+    assertEquals("this is info1", Cursors.getString(cursor, "message"));
 
     cursor.moveToNext();
     assertEquals("INFO", Cursors.getString(cursor, "priority"));
     assertEquals("this is info2", Cursors.getString(cursor, "message"));
 
     cursor.moveToNext();
-    assertEquals("INFO", Cursors.getString(cursor, "priority"));
-    assertEquals("this is info3", Cursors.getString(cursor, "message"));
-
-    cursor.moveToNext();
     assertEquals("WARN", Cursors.getString(cursor, "priority"));
     assertEquals("this is warn1", Cursors.getString(cursor, "message"));
 
     cursor.moveToNext();
-    assertEquals("WARN", Cursors.getString(cursor, "priority"));
-    assertEquals("this is warn2", Cursors.getString(cursor, "message"));
-
-    cursor.moveToNext();
-    assertEquals("WARN", Cursors.getString(cursor, "priority"));
-    assertEquals("this is warn3", Cursors.getString(cursor, "message"));
-
-    cursor.moveToNext();
     assertEquals("ERROR", Cursors.getString(cursor, "priority"));
     assertEquals("this is error1", Cursors.getString(cursor, "message"));
-
-    cursor.moveToNext();
-    assertEquals("ERROR", Cursors.getString(cursor, "priority"));
-    assertEquals("this is error2", Cursors.getString(cursor, "message"));
-
-    cursor.moveToNext();
-    assertEquals("ERROR", Cursors.getString(cursor, "priority"));
-    assertEquals("this is error3", Cursors.getString(cursor, "message"));
-
-    cursor.moveToNext();
-    assertEquals("ERROR", Cursors.getString(cursor, "priority"));
-    assertEquals("this is error4", Cursors.getString(cursor, "message"));
 
     cursor.close();
   }
@@ -169,12 +103,14 @@ public class HistorianTest {
       @Override
       public void run() {
         for (int i = 0, len = 10; i < len; i++) {
-          historian.log(Log.INFO, "this log in from background thread - " + i);
+          historian.log(Log.INFO, "this log is from background thread - " + i);
         }
       }
     });
 
     future.get();
+
+    Thread.sleep(200);
 
     Cursor cursor = getAllLogs(historian);
 

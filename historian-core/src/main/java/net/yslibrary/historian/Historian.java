@@ -6,7 +6,6 @@ import android.support.annotation.CheckResult;
 import android.util.Log;
 
 import net.yslibrary.historian.internal.DbOpenHelper;
-import net.yslibrary.historian.internal.LogQueue;
 import net.yslibrary.historian.internal.LogWriter;
 import net.yslibrary.historian.internal.LogWritingTask;
 import net.yslibrary.historian.internal.MainThreadExecutor;
@@ -32,25 +31,24 @@ public class Historian {
   final ExecutorService executorService;
   final DbOpenHelper dbOpenHelper;
   final LogWriter logWriter;
-  final LogQueue queue;
 
   final Context context;
   final File directory;
   final String dbName;
   final int size;
-  final int queueSize;
   final int logLevel;
 
   boolean initialized = false;
 
   private Historian(Context context,
                     File directory,
-                    String name, int size, int queueSize, int logLevel) {
+                    String name,
+                    int size,
+                    int logLevel) {
     this.context = context;
     this.directory = directory;
     this.dbName = name;
     this.size = size;
-    this.queueSize = queueSize;
     this.logLevel = logLevel;
 
     createDirIfNeeded(directory);
@@ -63,7 +61,6 @@ public class Historian {
     callbackExecutor = new MainThreadExecutor();
     executorService = Executors.newSingleThreadExecutor();
     logWriter = new LogWriter(dbOpenHelper, size);
-    queue = new LogQueue(queueSize);
   }
 
   /**
@@ -92,27 +89,19 @@ public class Historian {
 
     if (priority < logLevel) return;
 
-    queue.queue(LogEntity.create(priority, message, System.currentTimeMillis()));
-
-    if (!queue.isExceeded()) return;
-
-    executorService.execute(new LogWritingTask(callbackExecutor, logWriter, queue));
-  }
-
-  /**
-   * Save cached logs to SQLite.
-   * This operation is blocking.
-   */
-  public void flush() {
-    checkInitialized();
-    logWriter.log(queue);
+    executorService.execute(
+        new LogWritingTask(
+            callbackExecutor,
+            logWriter,
+            LogEntity.create(priority, message, System.currentTimeMillis())
+        )
+    );
   }
 
   /**
    * Terminate Historian
    * This method should only be called from {@link android.app.Application#onTerminate()}.
    * This method will perform;
-   * - write all cached {@link net.yslibrary.historian.LogEntity} to SQLite(this is blocking operation)
    * - close underlying {@link net.yslibrary.historian.internal.DbOpenHelper}
    * <p>
    * After calling this method, all calls to this instance of {@link net.yslibrary.historian.Historian}
@@ -120,7 +109,6 @@ public class Historian {
    */
   public void terminate() {
     checkInitialized();
-    logWriter.log(queue);
     dbOpenHelper.close();
   }
 
@@ -129,7 +117,7 @@ public class Historian {
    */
   public void delete() {
     checkInitialized();
-    logWriter.delete(queue);
+    logWriter.delete();
   }
 
   public String dbPath() {
@@ -169,7 +157,6 @@ public class Historian {
     private File directory;
     private String name = DB_NAME;
     private int size = SIZE;
-    private int queueSize = QUEUE_SIZE;
     private int logLevel = LOG_LEVEL;
 
     Builder(Context context) {
@@ -211,17 +198,14 @@ public class Historian {
       return this;
     }
 
-    public Builder queueSize(int queueSize) {
-      if (queueSize < 0)
-        throw new IllegalArgumentException("queueSize should be 0 or greater");
-      this.queueSize = queueSize;
-      return this;
-    }
-
     /**
-     * Specify minimum log level to save. The value should be any one of {@link android.util.Log#VERBOSE},
-     * {@link android.util.Log#DEBUG}, {@link android.util.Log#INFO}, {@link android.util.Log#WARN},
-     * {@link android.util.Log#ERROR} or {@link android.util.Log#ASSERT}.
+     * Specify minimum log level to save. The value should be any one of
+     * {@link android.util.Log#VERBOSE},
+     * {@link android.util.Log#DEBUG},
+     * {@link android.util.Log#INFO},
+     * {@link android.util.Log#WARN},
+     * {@link android.util.Log#ERROR} or
+     * {@link android.util.Log#ASSERT}.
      *
      * @param logLevel log level
      * @return Builder
@@ -238,7 +222,7 @@ public class Historian {
      */
     @CheckResult
     public Historian build() {
-      return new Historian(context, directory, name, size, queueSize, logLevel);
+      return new Historian(context, directory, name, size, logLevel);
     }
   }
 }

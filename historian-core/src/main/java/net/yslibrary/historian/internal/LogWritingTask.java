@@ -1,5 +1,7 @@
 package net.yslibrary.historian.internal;
 
+import net.yslibrary.historian.LogEntity;
+
 import java.util.concurrent.Executor;
 
 /**
@@ -10,21 +12,21 @@ public class LogWritingTask implements Runnable {
 
   private final Executor callbackExecutor;
   private final LogWriter logWriter;
-  private final LogQueue queue;
+  private final LogEntity log;
 
   public LogWritingTask(Executor callbackExecutor,
                         LogWriter logWriter,
-                        LogQueue queue) {
+                        LogEntity log) {
     this.callbackExecutor = callbackExecutor;
     this.logWriter = logWriter;
-    this.queue = queue;
+    this.log = log;
   }
 
   @Override
   public void run() {
 
     try {
-      logWriter.log(queue);
+      logWriter.log(log);
     } catch (final Exception e) {
       // rethrow to main thread
       callbackExecutor.execute(new Runnable() {
