@@ -117,6 +117,35 @@ public class HistorianTest {
     assertEquals(10, cursor.getCount());
   }
 
+  @Test
+  public void multipleWriteInMultipleThreads() throws InterruptedException {
+    int nThreads = 10;
+    historian.initialize();
+
+    for (int i = 0; i < nThreads; i++) {
+      Runnable writer = new Runnable() {
+        @Override
+        public void run() {
+          try {
+            Thread.sleep((int) (Math.random() * 200.0));
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          }
+          historian.log(Log.INFO, "this is test: " + System.currentTimeMillis());
+        }
+      };
+
+      Thread thread = new Thread(writer);
+      thread.run();
+    }
+
+    Thread.sleep(1000);
+
+    Cursor cursor = getAllLogs(historian);
+
+    assertEquals(cursor.getCount(), 10);
+  }
+
   Cursor getAllLogs(Historian historian) {
     SQLiteDatabase db = historian.dbOpenHelper.getReadableDatabase();
     return db.query("log", new String[]{"id", "priority", "message", "timestamp"}, null, null, null, null, "timestamp ASC");
