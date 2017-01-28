@@ -2,6 +2,7 @@ package net.yslibrary.historian;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.CheckResult;
 import android.util.Log;
 
 import net.yslibrary.historian.internal.DbOpenHelper;
@@ -161,6 +162,7 @@ public class Historian {
   /**
    * Build class for {@link net.yslibrary.historian.Historian}
    */
+  @SuppressWarnings("WeakerAccess")
   public static class Builder {
 
     private final Context context;
@@ -178,8 +180,8 @@ public class Historian {
     /**
      * Specify a directory where Historian's Database file is stored.
      *
-     * @param directory
-     * @return
+     * @param directory directory to save SQLite database file.
+     * @return Builder
      */
     public Builder directory(File directory) {
       this.directory = directory;
@@ -189,14 +191,20 @@ public class Historian {
     /**
      * Specify a name of the Historian's Database file
      *
-     * @param name
-     * @return
+     * @param name file name of the backing SQLite database file
+     * @return Builder
      */
     public Builder name(String name) {
       this.name = name;
       return this;
     }
 
+    /**
+     * Specify the max row number of the SQLite database
+     *
+     * @param size max row number
+     * @return Builder
+     */
     public Builder size(int size) {
       if (size < 0) throw new IllegalArgumentException("size should be 0 or greater");
       this.size = size;
@@ -210,12 +218,25 @@ public class Historian {
       return this;
     }
 
+    /**
+     * Specify minimum log level to save. The value should be any one of {@link android.util.Log#VERBOSE},
+     * {@link android.util.Log#DEBUG}, {@link android.util.Log#INFO}, {@link android.util.Log#WARN},
+     * {@link android.util.Log#ERROR} or {@link android.util.Log#ASSERT}.
+     *
+     * @param logLevel log level
+     * @return Builder
+     */
     public Builder logLevel(int logLevel) {
       this.logLevel = logLevel;
       return this;
     }
 
-
+    /**
+     * Build Historian. You need to call this method to use {@link Historian}
+     *
+     * @return {@link Historian}
+     */
+    @CheckResult
     public Historian build() {
       return new Historian(context, directory, name, size, queueSize, logLevel);
     }
