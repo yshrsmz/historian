@@ -8,11 +8,10 @@ import android.util.Log;
 import net.yslibrary.historian.internal.DbOpenHelper;
 import net.yslibrary.historian.internal.LogWriter;
 import net.yslibrary.historian.internal.LogWritingTask;
-import net.yslibrary.historian.internal.MainThreadExecutor;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.Executor;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -24,10 +23,10 @@ public class Historian {
 
   static final String DB_NAME = "log.db";
   static final int SIZE = 500;
-  static final int QUEUE_SIZE = 10;
   static final int LOG_LEVEL = Log.INFO;
 
-  final Executor callbackExecutor;
+  private static final String TAG = "Historian";
+
   final ExecutorService executorService;
   final DbOpenHelper dbOpenHelper;
   final LogWriter logWriter;
@@ -38,6 +37,7 @@ public class Historian {
   final int size;
   final int logLevel;
   final boolean debug;
+  final Callbacks callbacks;
 
   boolean initialized = false;
 
@@ -46,13 +46,15 @@ public class Historian {
                     String name,
                     int size,
                     int logLevel,
-                    boolean debug) {
+                    boolean debug,
+                    Callbacks callbacks) {
     this.context = context;
     this.directory = directory;
     this.dbName = name;
     this.size = size;
     this.logLevel = logLevel;
     this.debug = debug;
+    this.callbacks = (callbacks == null) ? new DefaultCallbacks(debug) : callbacks;
 
     createDirIfNeeded(directory);
     try {
@@ -61,7 +63,9 @@ public class Historian {
       throw new HistorianFileException("Could not resolve the canonical path to the Historian DB file: " + directory.getAbsolutePath(), e);
     }
 
-    callbackExecutor = new MainThreadExecutor();
+    if (debug)
+      Log.d(TAG, String.format(Locale.ENGLISH, "backing database file will be created at: %s", dbOpenHelper.getDatabaseName()));
+
     executorService = Executors.newSingleThreadExecutor();
     logWriter = new LogWriter(dbOpenHelper, size);
   }
@@ -94,7 +98,7 @@ public class Historian {
 
     executorService.execute(
         new LogWritingTask(
-            callbackExecutor,
+            callbacks,
             logWriter,
             LogEntity.create(priority, message, System.currentTimeMillis())
         )
@@ -150,6 +154,12 @@ public class Historian {
   }
 
 
+  public interface Callbacks {
+    void onSuccess();
+
+    void onFailure(Throwable throwable);
+  }
+
   /**
    * Build class for {@link net.yslibrary.historian.Historian}
    */
@@ -162,6 +172,7 @@ public class Historian {
     private int size = SIZE;
     private int logLevel = LOG_LEVEL;
     private boolean debug = false;
+    private Callbacks callbacks = null;
 
     Builder(Context context) {
       this.context = context.getApplicationContext();
@@ -237,6 +248,11 @@ public class Historian {
       return this;
     }
 
+    public Builder callbacks(Callbacks callbacks) {
+      this.callbacks = callbacks;
+      return this;
+    }
+
     /**
      * Build Historian. You need to call this method to use {@link Historian}
      *
@@ -244,7 +260,25 @@ public class Historian {
      */
     @CheckResult
     public Historian build() {
-      return new Historian(context, directory, name, size, logLevel, debug);
+      return new Historian(context, directory, name, size, logLevel, debug, callbacks);
+    }
+  }
+
+  private static class DefaultCallbacks implements Callbacks {
+    private final boolean debug;
+
+    DefaultCallbacks(boolean debug) {
+      this.debug = debug;
+    }
+
+    @Override
+    public void onSuccess() {
+
+    }
+
+    @Override
+    public void onFailure(Throwable throwable) {
+      if (debug) Log.e(TAG, "Something happened while trying to save a log", throwable);
     }
   }
 }

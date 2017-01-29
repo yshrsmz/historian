@@ -1,8 +1,7 @@
 package net.yslibrary.historian.internal;
 
+import net.yslibrary.historian.Historian;
 import net.yslibrary.historian.LogEntity;
-
-import java.util.concurrent.Executor;
 
 /**
  * Created by yshrsmz on 2017/01/21.
@@ -10,14 +9,14 @@ import java.util.concurrent.Executor;
 
 public class LogWritingTask implements Runnable {
 
-  private final Executor callbackExecutor;
+  private final Historian.Callbacks callbacks;
   private final LogWriter logWriter;
   private final LogEntity log;
 
-  public LogWritingTask(Executor callbackExecutor,
+  public LogWritingTask(Historian.Callbacks callbacks,
                         LogWriter logWriter,
                         LogEntity log) {
-    this.callbackExecutor = callbackExecutor;
+    this.callbacks = callbacks;
     this.logWriter = logWriter;
     this.log = log;
   }
@@ -27,14 +26,10 @@ public class LogWritingTask implements Runnable {
 
     try {
       logWriter.log(log);
-    } catch (final Exception e) {
-      // rethrow to main thread
-      callbackExecutor.execute(new Runnable() {
-        @Override
-        public void run() {
-          throw e;
-        }
-      });
+
+      callbacks.onSuccess();
+    } catch (final Throwable throwable) {
+      callbacks.onFailure(throwable);
     }
   }
 }
