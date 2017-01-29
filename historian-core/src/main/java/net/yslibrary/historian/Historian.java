@@ -37,6 +37,7 @@ public class Historian {
   final String dbName;
   final int size;
   final int logLevel;
+  final boolean debug;
 
   boolean initialized = false;
 
@@ -44,12 +45,14 @@ public class Historian {
                     File directory,
                     String name,
                     int size,
-                    int logLevel) {
+                    int logLevel,
+                    boolean debug) {
     this.context = context;
     this.directory = directory;
     this.dbName = name;
     this.size = size;
     this.logLevel = logLevel;
+    this.debug = debug;
 
     createDirIfNeeded(directory);
     try {
@@ -158,6 +161,7 @@ public class Historian {
     private String name = DB_NAME;
     private int size = SIZE;
     private int logLevel = LOG_LEVEL;
+    private boolean debug = false;
 
     Builder(Context context) {
       this.context = context.getApplicationContext();
@@ -177,6 +181,8 @@ public class Historian {
 
     /**
      * Specify a name of the Historian's Database file
+     * <p>
+     * Default is {@link Historian#DB_NAME}
      *
      * @param name file name of the backing SQLite database file
      * @return Builder
@@ -188,6 +194,8 @@ public class Historian {
 
     /**
      * Specify the max row number of the SQLite database
+     * <p>
+     * Default is 500.
      *
      * @param size max row number
      * @return Builder
@@ -206,6 +214,8 @@ public class Historian {
      * {@link android.util.Log#WARN},
      * {@link android.util.Log#ERROR} or
      * {@link android.util.Log#ASSERT}.
+     * <p>
+     * Default is {@link android.util.Log#INFO}
      *
      * @param logLevel log level
      * @return Builder
@@ -216,13 +226,25 @@ public class Historian {
     }
 
     /**
+     * Output Historian's debug logs(not saved to SQLite database)
+     * Default is false.
+     *
+     * @param debug true: output logs. false: no debug logs
+     * @return Builder
+     */
+    public Builder debug(boolean debug) {
+      this.debug = debug;
+      return this;
+    }
+
+    /**
      * Build Historian. You need to call this method to use {@link Historian}
      *
      * @return {@link Historian}
      */
     @CheckResult
     public Historian build() {
-      return new Historian(context, directory, name, size, logLevel);
+      return new Historian(context, directory, name, size, logLevel, debug);
     }
   }
 }

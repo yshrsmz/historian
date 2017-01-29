@@ -21,10 +21,9 @@ class App extends Application {
             .directory(new File(Environment.getExternalStorageDirectory(), "somedir"))
             // max number of logs stored in db. defaults to 500
             .size(500)
-            // queue logs until specified logs collected, so that db operation is minimized. defaults to 10
-            .queueSize(10)
             // log level to save
             .logLevel(Log.INFO)
+            .debug(true)
             .build();
 
         // initialize historian
