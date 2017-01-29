@@ -25,13 +25,12 @@ import static org.junit.Assert.assertEquals;
 @RunWith(ConfiguredRobolectricTestRunner.class)
 public class HistorianTest {
 
-  Historian historian;
-
-  Context context;
+  private Historian historian;
 
   @Before
   public void setup() {
-    context = RuntimeEnvironment.application;
+    Context context = RuntimeEnvironment.application;
+
     historian = Historian.builder(context).build();
   }
 
@@ -146,7 +145,7 @@ public class HistorianTest {
     assertEquals(cursor.getCount(), 10);
   }
 
-  Cursor getAllLogs(Historian historian) {
+  private Cursor getAllLogs(Historian historian) {
     SQLiteDatabase db = historian.dbOpenHelper.getReadableDatabase();
     return db.query("log", new String[]{"id", "priority", "message", "timestamp"}, null, null, null, null, "timestamp ASC");
   }

@@ -19,7 +19,7 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(ConfiguredRobolectricTestRunner.class)
 public class HistorianBuilderTest {
 
-  Context context;
+  private Context context;
 
   @Before
   public void setup() {
