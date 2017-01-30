@@ -76,6 +76,7 @@ public class Historian {
    * @param context Context
    * @return
    */
+  @CheckResult
   public static Builder builder(Context context) {
     return new Builder(context);
   }
@@ -198,6 +199,7 @@ public class Historian {
      * @param name file name of the backing SQLite database file
      * @return Builder
      */
+    @CheckResult
     public Builder name(String name) {
       this.name = name;
       return this;
@@ -211,6 +213,7 @@ public class Historian {
      * @param size max row number
      * @return Builder
      */
+    @CheckResult
     public Builder size(int size) {
       if (size < 0) throw new IllegalArgumentException("size should be 0 or greater");
       this.size = size;
@@ -231,6 +234,7 @@ public class Historian {
      * @param logLevel log level
      * @return Builder
      */
+    @CheckResult
     public Builder logLevel(int logLevel) {
       this.logLevel = logLevel;
       return this;
@@ -243,11 +247,13 @@ public class Historian {
      * @param debug true: output logs. false: no debug logs
      * @return Builder
      */
+    @CheckResult
     public Builder debug(boolean debug) {
       this.debug = debug;
       return this;
     }
 
+    @CheckResult
     public Builder callbacks(Callbacks callbacks) {
       this.callbacks = callbacks;
       return this;
@@ -273,7 +279,7 @@ public class Historian {
 
     @Override
     public void onSuccess() {
-
+      // no-op
     }
 
     @Override
