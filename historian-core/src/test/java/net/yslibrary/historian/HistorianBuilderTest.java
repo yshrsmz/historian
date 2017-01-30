@@ -8,10 +8,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
-import java.io.File;
-
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by yshrsmz on 2017/01/22.
@@ -34,13 +36,15 @@ public class HistorianBuilderTest {
     assertNotNull(historian.dbOpenHelper);
     assertNotNull(historian.logWriter);
 
-    String path = context.getFilesDir() + File.separator + Historian.DB_NAME;
-    assertEquals(historian.dbOpenHelper.getDatabaseName(), path);
+//    String path = context.getFilesDir() + File.separator + Historian.DB_NAME;
+//    assertEquals(historian.dbOpenHelper.getDatabaseName(), path);
 
     assertEquals(Historian.LOG_LEVEL, historian.logLevel);
     assertEquals(context.getFilesDir(), historian.directory);
     assertEquals(Historian.DB_NAME, historian.dbName);
     assertEquals(Historian.SIZE, historian.size);
+    assertFalse(historian.debug);
+    assertThat(historian.callbacks, instanceOf(Historian.DefaultCallbacks.class));
   }
 
   @Test
@@ -50,18 +54,35 @@ public class HistorianBuilderTest {
         .directory(context.getExternalFilesDir(null))
         .logLevel(Log.DEBUG)
         .size(1000)
+        .debug(true)
+        .callbacks(new TestCallbacks())
         .build();
 
     assertNotNull(historian.context);
     assertNotNull(historian.dbOpenHelper);
     assertNotNull(historian.logWriter);
 
-    String path = context.getExternalFilesDir(null) + File.separator + "test.db";
-    assertEquals(path, historian.dbOpenHelper.getDatabaseName());
+//    String path = context.getExternalFilesDir(null) + File.separator + "test.db";
+//    assertEquals(path, historian.dbOpenHelper.getDatabaseName());
 
     assertEquals(Log.DEBUG, historian.logLevel);
     assertEquals(context.getExternalFilesDir(null), historian.directory);
     assertEquals("test.db", historian.dbName);
     assertEquals(1000, historian.size);
+    assertTrue(historian.debug);
+    assertThat(historian.callbacks, instanceOf(TestCallbacks.class));
+  }
+
+  class TestCallbacks implements Historian.Callbacks {
+
+    @Override
+    public void onSuccess() {
+
+    }
+
+    @Override
+    public void onFailure(Throwable throwable) {
+
+    }
   }
 }

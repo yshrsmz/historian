@@ -270,7 +270,7 @@ public class Historian {
     }
   }
 
-  private static class DefaultCallbacks implements Callbacks {
+  static class DefaultCallbacks implements Callbacks {
     private final boolean debug;
 
     DefaultCallbacks(boolean debug) {
