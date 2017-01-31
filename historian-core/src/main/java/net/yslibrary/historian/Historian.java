@@ -241,7 +241,8 @@ public class Historian {
     }
 
     /**
-     * Output Historian's debug logs(not saved to SQLite database)
+     * Enable/disable Historian's debug logs(not saved to SQLite).
+     * <p>
      * Default is false.
      *
      * @param debug true: output logs. false: no debug logs
@@ -253,6 +254,15 @@ public class Historian {
       return this;
     }
 
+    /**
+     * Specify callbacks. This callbacks are called each time Historian save a log.
+     * This callbacks are called on background thread.
+     * <p>
+     * Default is {@link DefaultCallbacks}
+     *
+     * @param callbacks callbacks to execute.
+     * @return Builder
+     */
     @CheckResult
     public Builder callbacks(Callbacks callbacks) {
       this.callbacks = callbacks;
