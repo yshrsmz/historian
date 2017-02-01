@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Created by yshrsmz on 17/01/20.
+ * Historian
  */
 
 public class Historian {
@@ -27,10 +27,8 @@ public class Historian {
 
   private static final String TAG = "Historian";
 
-  final ExecutorService executorService;
   final DbOpenHelper dbOpenHelper;
   final LogWriter logWriter;
-
   final Context context;
   final File directory;
   final String dbName;
@@ -39,7 +37,8 @@ public class Historian {
   final boolean debug;
   final Callbacks callbacks;
 
-  boolean initialized = false;
+  private final ExecutorService executorService;
+  private boolean initialized = false;
 
   private Historian(Context context,
                     File directory,

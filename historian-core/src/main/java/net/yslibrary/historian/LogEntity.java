@@ -3,7 +3,7 @@ package net.yslibrary.historian;
 import net.yslibrary.historian.internal.Util;
 
 /**
- * Created by yshrsmz on 2017/01/20.
+ * Entity class representing log
  */
 
 public class LogEntity {

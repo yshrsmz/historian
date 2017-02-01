@@ -1,7 +1,7 @@
 package net.yslibrary.historian.internal;
 
 /**
- * Created by yshrsmz on 17/01/20.
+ * Table definition of Log
  */
 
 class LogTable {

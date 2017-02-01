@@ -2,10 +2,6 @@ package net.yslibrary.historian.internal;
 
 import android.util.Log;
 
-/**
- * Created by yshrsmz on 2017/01/20.
- */
-
 public class Util {
 
   private Util() {

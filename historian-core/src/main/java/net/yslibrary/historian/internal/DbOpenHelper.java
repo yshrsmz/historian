@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 /**
- * Created by yshrsmz on 17/01/20.
+ * SQLiteOpenHelper for Historian
  */
 
 public class DbOpenHelper extends SQLiteOpenHelper {
@@ -26,7 +26,7 @@ public class DbOpenHelper extends SQLiteOpenHelper {
     // no-op
   }
 
-  public void executeTransaction(Transaction transaction) {
+  void executeTransaction(Transaction transaction) {
     SQLiteDatabase db = null;
     try {
       db = getWritableDatabase();

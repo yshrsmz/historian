@@ -4,7 +4,7 @@ import net.yslibrary.historian.Historian;
 import net.yslibrary.historian.LogEntity;
 
 /**
- * Created by yshrsmz on 2017/01/21.
+ * Runnable implementation writing logs & executing callbacks
  */
 
 public class LogWritingTask implements Runnable {

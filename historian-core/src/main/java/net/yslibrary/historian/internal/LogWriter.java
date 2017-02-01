@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteStatement;
 import net.yslibrary.historian.LogEntity;
 
 /**
- * Created by yshrsmz on 2017/01/20.
+ * Class for log writing operation
  */
 
 public class LogWriter {
