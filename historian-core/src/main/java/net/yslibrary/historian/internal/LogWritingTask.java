@@ -1,7 +1,6 @@
 package net.yslibrary.historian.internal;
 
 import net.yslibrary.historian.Historian;
-import net.yslibrary.historian.LogEntity;
 
 /**
  * Runnable implementation writing logs & executing callbacks

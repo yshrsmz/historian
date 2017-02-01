@@ -3,8 +3,6 @@ package net.yslibrary.historian.internal;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 
-import net.yslibrary.historian.LogEntity;
-
 /**
  * Class for log writing operation
  */

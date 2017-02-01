@@ -6,6 +6,7 @@ import android.support.annotation.CheckResult;
 import android.util.Log;
 
 import net.yslibrary.historian.internal.DbOpenHelper;
+import net.yslibrary.historian.internal.LogEntity;
 import net.yslibrary.historian.internal.LogWriter;
 import net.yslibrary.historian.internal.LogWritingTask;
 
