@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.ben-manes.versions'
+apply plugin: 'com.novoda.bintray-release'
 
 apply from: '../gradle/dependencies.gradle'
 
@@ -33,4 +34,16 @@ dependencies {
   })
 
   testCompile deps.junit
+}
+
+publish {
+  artifactId = 'historian-tree'
+  desc = 'Timber(Logging library for Android) Tree implementation for Historian'
+
+  def metadata = project.rootProject.ext.metadata
+  groupId = metadata.groupId
+  publishVersion = metadata.version
+  website = metadata.website
+  repository = metadata.repository
+  licences = metadata.licences
 }
