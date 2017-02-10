@@ -74,7 +74,7 @@ public class Historian {
    * Get Builder
    *
    * @param context Context
-   * @return
+   * @return {@link Builder}
    */
   @CheckResult
   public static Builder builder(Context context) {

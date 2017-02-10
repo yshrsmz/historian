@@ -3,7 +3,7 @@ package net.yslibrary.historian.internal;
 import net.yslibrary.historian.Historian;
 
 /**
- * Runnable implementation writing logs & executing callbacks
+ * Runnable implementation writing logs and executing callbacks
  */
 
 public class LogWritingTask implements Runnable {
