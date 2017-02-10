@@ -108,7 +108,6 @@ public class Historian {
 
   /**
    * Terminate Historian
-   * This method should only be called from {@link android.app.Application#onTerminate()}.
    * This method will perform;
    * - close underlying {@link net.yslibrary.historian.internal.DbOpenHelper}
    * <p>
@@ -186,6 +185,7 @@ public class Historian {
      * @param directory directory to save SQLite database file.
      * @return Builder
      */
+    @CheckResult
     public Builder directory(File directory) {
       this.directory = directory;
       return this;
