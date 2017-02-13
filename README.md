@@ -34,7 +34,7 @@ class App extends Application {
         // initialize historian
         historian.initialize();
 
-        Timber.plant(LogHistorianTree.with(historian));
+        Timber.plant(HistorianTree.with(historian));
 
         // delete all saved logs
         historian.delete();
