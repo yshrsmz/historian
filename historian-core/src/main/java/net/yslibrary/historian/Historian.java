@@ -127,6 +127,11 @@ public class Historian {
     logWriter.delete();
   }
 
+  /**
+   * Get absolute path of database file
+   *
+   * @return absolute path of database file
+   */
   public String dbPath() {
     checkInitialized();
     try {
@@ -134,6 +139,15 @@ public class Historian {
     } catch (IOException e) {
       throw new HistorianFileException("Could not resolve the canonical path to the Historian DB file: " + directory.getAbsolutePath(), e);
     }
+  }
+
+  /**
+   * Get database file name
+   *
+   * @return database file name
+   */
+  public String dbName() {
+    return dbName;
   }
 
   SQLiteDatabase getDatabase() {
@@ -161,7 +175,7 @@ public class Historian {
   }
 
   /**
-   * Build class for {@link net.yslibrary.historian.Historian}
+   * Builder class for {@link net.yslibrary.historian.Historian}
    */
   @SuppressWarnings("WeakerAccess")
   public static class Builder {
