@@ -147,6 +147,6 @@ public class HistorianTest {
 
   private Cursor getAllLogs(Historian historian) {
     SQLiteDatabase db = historian.dbOpenHelper.getReadableDatabase();
-    return db.query("log", new String[]{"id", "priority", "message", "timestamp"}, null, null, null, null, "timestamp ASC");
+    return db.query("log", new String[]{"id", "priority", "message", "created_at"}, null, null, null, null, "created_at ASC");
   }
 }
