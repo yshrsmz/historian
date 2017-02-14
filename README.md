@@ -7,7 +7,15 @@ This library is primarily made to help debugging crash in consumers' devices.
 
 ## Installation
 
-TBD
+Historian is distributed via jCenter. [![Bintray](https://img.shields.io/bintray/v/yshrsmz/maven/historian-core.svg)](https://bintray.com/yshrsmz/maven/historian-core/view)
+
+```gradle
+dependencies {
+  compile 'net.yslibrary.historian:historian-core:LATEST_LIBRARY_VERSION'
+  compile 'net.yslibrary.historian:historian-tree:LATEST_LIBRARY_VERSION'
+  compile 'com.jakewharton.timber:timber:4.5.1'
+}
+```
 
 ## Usage
 
