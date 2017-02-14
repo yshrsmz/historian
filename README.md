@@ -1,7 +1,7 @@
-Historian Tree
+Historian
 ===
 
-HistorianTree is a custom [Timber](https://github.com/JakeWharton/timber).Tree implementation that saves logs to SQLite, so that you can see the SQLite file later for debugging.
+Historian is a custom [Timber](https://github.com/JakeWharton/timber).Tree implementation that saves logs to SQLite, so that you can see/download the SQLite file later for debugging.
 
 This library is primarily made to help debugging crash in consumers' devices.
 
