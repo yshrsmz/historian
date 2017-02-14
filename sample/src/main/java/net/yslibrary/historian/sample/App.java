@@ -1,6 +1,8 @@
 package net.yslibrary.historian.sample;
 
 import android.app.Application;
+import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.facebook.stetho.Stetho;
 
@@ -17,6 +19,14 @@ import timber.log.Timber;
 public class App extends Application {
 
   Historian historian;
+
+  public static App get(@NonNull Context context) {
+    return (App) context.getApplicationContext();
+  }
+
+  public static Historian getHistorian(@NonNull Context context) {
+    return get(context).getHistorian();
+  }
 
   @Override
   public void onCreate() {
@@ -43,4 +53,7 @@ public class App extends Application {
     historian.terminate();
   }
 
+  public Historian getHistorian() {
+    return historian;
+  }
 }

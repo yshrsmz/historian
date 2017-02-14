@@ -14,8 +14,11 @@
     tools:context=".MainActivity"
     tools:showIn="@layout/activity_main">
 
-  <TextView
-      android:layout_width="wrap_content"
+  <Button
+      android:id="@+id/export"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:text="Hello World!"/>
+      android:text="EXPORT DATABASE"/>
+
+
 </RelativeLayout>
