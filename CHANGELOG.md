@@ -1,7 +1,7 @@
 Historian Tree Change Log
 ===
 
-## v0.3.0 - 2017/02/20
+## v0.3.1 - 2017/02/20
 
 Preview Release 3
 
