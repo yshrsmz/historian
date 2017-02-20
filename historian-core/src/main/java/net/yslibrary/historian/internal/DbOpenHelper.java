@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DbOpenHelper extends SQLiteOpenHelper {
 
-  private static final int DB_VERSION = 1;
+  private static final int DB_VERSION = 2;
 
   public DbOpenHelper(Context context, String name) {
     super(context, name, null, DB_VERSION);
@@ -23,7 +23,11 @@ public class DbOpenHelper extends SQLiteOpenHelper {
 
   @Override
   public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-    // no-op
+    if (oldVersion == 1) {
+      db.execSQL(LogTable.DROP_TABLE);
+      db.execSQL(LogTable.CREATE_TABLE);
+      oldVersion++;
+    }
   }
 
   void executeTransaction(Transaction transaction) {

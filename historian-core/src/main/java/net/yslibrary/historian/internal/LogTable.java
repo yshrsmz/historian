@@ -20,6 +20,11 @@ class LogTable {
       .append(");")
       .toString();
 
+  public static final String DROP_TABLE = new StringBuilder()
+      .append("DROP TABLE ").append(NAME)
+      .append(";")
+      .toString();
+
   @SuppressWarnings("StringBufferReplaceableByString")
   public static final String INSERT = new StringBuilder()
       .append("INSERT INTO ").append(NAME)
