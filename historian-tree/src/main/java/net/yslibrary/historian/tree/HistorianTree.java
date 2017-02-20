@@ -22,6 +22,6 @@ public class HistorianTree extends Timber.Tree {
 
   @Override
   protected void log(int priority, String tag, String message, Throwable t) {
-    historian.log(priority, message);
+    historian.log(priority, tag, message);
   }
 }

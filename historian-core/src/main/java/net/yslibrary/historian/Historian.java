@@ -92,16 +92,17 @@ public class Historian {
     initialized = true;
   }
 
-  public void log(int priority, String message) {
+  public void log(int priority, String tag, String message) {
     checkInitialized();
 
     if (priority < logLevel) return;
+    if (message == null || message.length() == 0) return;
 
     executorService.execute(
         new LogWritingTask(
             callbacks,
             logWriter,
-            LogEntity.create(priority, message, System.currentTimeMillis())
+            LogEntity.create(priority, tag, message, System.currentTimeMillis())
         )
     );
   }

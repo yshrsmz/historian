@@ -13,17 +13,18 @@ class LogTable {
       .append("CREATE TABLE ").append(NAME)
       .append(" (")
       .append("id INTEGER PRIMARY KEY AUTOINCREMENT,")
-      .append("priority TEXT, ")
-      .append("message TEXT, ")
-      .append("created_at INTEGER")
+      .append("priority TEXT NOT NULL, ")
+      .append("tag TEXT NOT NULL, ")
+      .append("message TEXT NOT NULL, ")
+      .append("created_at INTEGER NOT NULL")
       .append(");")
       .toString();
 
   @SuppressWarnings("StringBufferReplaceableByString")
   public static final String INSERT = new StringBuilder()
       .append("INSERT INTO ").append(NAME)
-      .append("(priority, message, created_at) ")
-      .append("VALUES(?, ?, ?);")
+      .append("(priority, tag, message, created_at) ")
+      .append("VALUES(?, ?, ?, ?);")
       .toString();
 
   @SuppressWarnings("StringBufferReplaceableByString")

@@ -25,6 +25,8 @@ import static org.junit.Assert.assertEquals;
 @RunWith(ConfiguredRobolectricTestRunner.class)
 public class HistorianTest {
 
+  static final String TAG = "test_tag";
+
   private Historian historian;
 
   @Before
@@ -36,16 +38,16 @@ public class HistorianTest {
 
   @Test(expected = IllegalStateException.class)
   public void initialize_not_called() {
-    historian.log(Log.DEBUG, "this is debug1");
+    historian.log(Log.DEBUG, TAG, "this is debug1");
   }
 
   @Test
   public void log_queue_under_logLevel() {
     historian.initialize();
 
-    historian.log(Log.VERBOSE, "this is verbose");
-    historian.log(Log.DEBUG, "this is debug1");
-    historian.log(Log.DEBUG, "this is debug2");
+    historian.log(Log.VERBOSE, TAG, "this is verbose");
+    historian.log(Log.DEBUG, TAG, "this is debug1");
+    historian.log(Log.DEBUG, TAG, "this is debug2");
 
     Cursor result = getAllLogs(historian);
 
@@ -56,11 +58,11 @@ public class HistorianTest {
   public void log_queue_over_logLevel() throws InterruptedException {
     historian.initialize();
 
-    historian.log(Log.INFO, "this is info1");
-    historian.log(Log.DEBUG, "this is debug1");
-    historian.log(Log.INFO, "this is info2");
-    historian.log(Log.WARN, "this is warn1");
-    historian.log(Log.ERROR, "this is error1");
+    historian.log(Log.INFO, TAG, "this is info1");
+    historian.log(Log.DEBUG, TAG, "this is debug1");
+    historian.log(Log.INFO, TAG, "this is info2");
+    historian.log(Log.WARN, TAG, "this is warn1");
+    historian.log(Log.ERROR, TAG, "this is error1");
 
     Thread.sleep(500);
 
@@ -70,18 +72,22 @@ public class HistorianTest {
 
     cursor.moveToFirst();
     assertEquals("INFO", Cursors.getString(cursor, "priority"));
+    assertEquals(TAG, Cursors.getString(cursor, "tag"));
     assertEquals("this is info1", Cursors.getString(cursor, "message"));
 
     cursor.moveToNext();
     assertEquals("INFO", Cursors.getString(cursor, "priority"));
+    assertEquals(TAG, Cursors.getString(cursor, "tag"));
     assertEquals("this is info2", Cursors.getString(cursor, "message"));
 
     cursor.moveToNext();
     assertEquals("WARN", Cursors.getString(cursor, "priority"));
+    assertEquals(TAG, Cursors.getString(cursor, "tag"));
     assertEquals("this is warn1", Cursors.getString(cursor, "message"));
 
     cursor.moveToNext();
     assertEquals("ERROR", Cursors.getString(cursor, "priority"));
+    assertEquals(TAG, Cursors.getString(cursor, "tag"));
     assertEquals("this is error1", Cursors.getString(cursor, "message"));
 
     cursor.close();
@@ -102,7 +108,7 @@ public class HistorianTest {
       @Override
       public void run() {
         for (int i = 0, len = 10; i < len; i++) {
-          historian.log(Log.INFO, "this log is from background thread - " + i);
+          historian.log(Log.INFO, TAG, "this log is from background thread - " + i);
         }
       }
     });
@@ -130,7 +136,7 @@ public class HistorianTest {
           } catch (InterruptedException e) {
             e.printStackTrace();
           }
-          historian.log(Log.INFO, "this is test: " + System.currentTimeMillis());
+          historian.log(Log.INFO, TAG, "this is test: " + System.currentTimeMillis());
         }
       };
 
@@ -145,8 +151,22 @@ public class HistorianTest {
     assertEquals(cursor.getCount(), 10);
   }
 
+  @Test
+  public void nullTag() throws InterruptedException {
+    historian.initialize();
+
+    historian.log(Log.INFO, null, "this tag should be null");
+
+    Thread.sleep(1000);
+
+    Cursor cursor = getAllLogs(historian);
+
+    cursor.moveToFirst();
+    assertEquals("", Cursors.getString(cursor, "tag"));
+  }
+
   private Cursor getAllLogs(Historian historian) {
     SQLiteDatabase db = historian.dbOpenHelper.getReadableDatabase();
-    return db.query("log", new String[]{"id", "priority", "message", "created_at"}, null, null, null, null, "created_at ASC");
+    return db.query("log", new String[]{"id", "tag", "priority", "message", "created_at"}, null, null, null, null, "created_at ASC");
   }
 }

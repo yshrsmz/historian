@@ -26,8 +26,9 @@ public class LogWriter {
         // insert provided log
         SQLiteStatement insertStatement = db.compileStatement(LogTable.INSERT);
         insertStatement.bindString(1, log.priority);
-        insertStatement.bindString(2, log.message);
-        insertStatement.bindLong(3, log.timestamp);
+        insertStatement.bindString(2, log.tag == null ? "" : log.tag);
+        insertStatement.bindString(3, log.message);
+        insertStatement.bindLong(4, log.timestamp);
         insertStatement.execute();
 
         // delete if row count exceeds provided size
