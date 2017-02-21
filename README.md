@@ -61,7 +61,7 @@ CREATE TABLE log(
   priority TEXT NOT NULL,
   tag TEXT NOT NULL,
   message TEXT NOT NULL,
-  created_at INTEGER NOT NULL");
+  created_at INTEGER NOT NULL);
 ```
 
 
