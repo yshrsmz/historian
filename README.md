@@ -53,6 +53,17 @@ class App extends Application {
 }
 ```
 
+## Table definition
+
+```sql
+CREATE TABLE log(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  priority TEXT NOT NULL,
+  tag TEXT NOT NULL,
+  message TEXT NOT NULL,
+  created_at INTEGER NOT NULL");
+```
+
 
 ## License
 
