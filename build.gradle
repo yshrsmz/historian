@@ -13,6 +13,7 @@ buildscript {
     // in the individual module build.gradle files
     classpath 'com.novoda:bintray-release:0.4.0'
     classpath 'com.github.ben-manes:gradle-versions-plugin:0.13.0'
+    classpath 'org.jacoco:org.jacoco.core:0.7.7.201606060606'
   }
 }
 
