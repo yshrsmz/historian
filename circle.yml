@@ -14,10 +14,6 @@ general:
 
 dependencies:
   override:
-    - sudo service postgresql stop
-    - sudo service memcached stop
-    - sudo service mysql stop
-    - sudo service rabbitmq-server stop
     - curl -fSL https://github.com/haya14busa/reviewdog/releases/download/$REVIEWDOG_VERSION/reviewdog_linux_amd64 -o reviewdog && chmod +x ./reviewdog
     - echo yes | android update sdk --no-ui --all --filter "tools" # get sdkmanager
     - mkdir -p "$ANDROID_HOME"/licenses
