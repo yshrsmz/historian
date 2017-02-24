@@ -6,6 +6,11 @@ machine:
   java:
     version: oraclejdk8
 
+general:
+  artifacts:
+    - historian-core/build/reports/tests
+    - historian-core/build/reports/coverage
+
 dependencies:
   override:
     - sudo service postgresql stop
