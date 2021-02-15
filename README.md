@@ -3,7 +3,7 @@ Historian
 
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Historian-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/5329)
 [![CircleCI](https://circleci.com/gh/yshrsmz/historian.svg?style=svg)](https://circleci.com/gh/yshrsmz/historian)
-[![codecov](https://codecov.io/gh/yshrsmz/historian/branch/master/graph/badge.svg)](https://codecov.io/gh/yshrsmz/historian)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/net.yslibrary.historian/historian-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/net.yslibrary.historian/historian-core)
 
 Historian is a custom [Timber](https://github.com/JakeWharton/timber).Tree implementation that saves logs to SQLite, so that you can see/download the SQLite file later for debugging.
 
@@ -11,7 +11,7 @@ This library is primarily made to help debugging crash in consumers' devices.
 
 ## Installation
 
-Historian is distributed via jCenter. [![Bintray](https://img.shields.io/bintray/v/yshrsmz/maven/historian-core.svg)](https://bintray.com/yshrsmz/maven/historian-core/view)
+Historian is distributed via Maven Central. [![Maven Central](https://maven-badges.herokuapp.com/maven-central/net.yslibrary.historian/historian-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/net.yslibrary.historian/historian-core)
 
 ```gradle
 dependencies {
