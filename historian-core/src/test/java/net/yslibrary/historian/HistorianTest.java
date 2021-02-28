@@ -9,6 +9,7 @@ import android.util.Log;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -22,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by yshrsmz on 2017/01/22.
  */
-@RunWith(ConfiguredRobolectricTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class HistorianTest {
 
   static final String TAG = "test_tag";

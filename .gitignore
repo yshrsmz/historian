@@ -17,3 +17,4 @@ google-services.json
 *.jks
 
 !.idea/codeStyleSettings.xml
+jacoco.exec

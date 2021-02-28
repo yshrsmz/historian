@@ -1,6 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.ben-manes.versions'
-apply plugin: 'com.novoda.bintray-release'
 apply plugin: 'jacoco'
 
 apply from: '../gradle/dependencies.gradle'
@@ -10,16 +8,15 @@ def isCi = "true".equals(System.getenv("CI"))
 def preDexEnabled = "true".equals(System.getProperty("pre-dex", "true"))
 
 android {
-  compileSdkVersion 25
-  buildToolsVersion "25.0.2"
+  compileSdkVersion 30
 
   defaultConfig {
     minSdkVersion 15
-    targetSdkVersion 25
+    targetSdkVersion 30
     versionCode 1
     versionName "1.0"
 
-    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
   }
   buildTypes {
@@ -44,52 +41,67 @@ android {
       }
     }
   }
+
+  buildFeatures {
+    buildConfig = false
+  }
 }
 
 dependencies {
-  compile deps.appcompat
+  implementation deps.annotation
 
-  androidTestCompile(deps.espresso, {
-    exclude group: 'com.android.support', module: 'support-annotations'
-  })
-
-  testCompile deps.junit
-  testCompile deps.robolectric
+  testImplementation deps.junit
+  testImplementation deps.robolectric
+  testCompileOnly deps.autoService.annotation
+  testAnnotationProcessor deps.autoService.compiler
 }
 
-publish {
-  artifactId = 'historian-core'
-  desc = "a simple logger which saves logs to SQLite, to get better understanding of user's environment"
-
-  def metadata = project.rootProject.ext.metadata
-  groupId = metadata.groupId
-  publishVersion = metadata.version
-  website = metadata.website
-  repository = metadata.repository
-  licences = metadata.licences
-}
+//publish {
+//  artifactId = 'historian-core'
+//  desc = "a simple logger which saves logs to SQLite, to get better understanding of user's environment"
+//
+//  def metadata = project.rootProject.ext.metadata
+//  groupId = metadata.groupId
+//  publishVersion = metadata.version
+//  website = metadata.website
+//  repository = metadata.repository
+//  licences = metadata.licences
+//}
 
 // A list of directories which should be included in coverage report
 def coverageSourceDirs = ['src/main/java']
 // A list of files which should be excluded from coverage report since they are generated and/or framework code
 def coverageExcludeFiles = ['**/R.class', '**/R$*.class', '**/com/android/**/*.*']
 
-task jacocoTestReportDebug(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
-  group = "Reporting"
+jacoco {
+  toolVersion = "0.8.6"
+}
+
+// https://issuetracker.google.com/issues/178015739
+tasks.withType(Test.class).configureEach {
+  jacoco {
+    excludes = ['*']
+    includeNoLocationClasses = true
+  }
+}
+
+task jacocoTestReportDebug(
+    type: JacocoReport,
+    dependsOn: ['testDebugUnitTest'],
+    group: 'verification'
+) {
   description = "Generate Jacoco coverage reports after running tests."
   reports {
-    xml.enabled true
-    html.enabled true
-    csv.enabled false
-    xml.destination "${buildDir}/reports/jacoco/test/jacocoTestReportDebug.xml"
-    html.destination "${buildDir}/reports/coverage/debug"
-    classDirectories = files(
-        fileTree(
-            dir: "${buildDir}/intermediates/classes/debug",
-            exclude: coverageExcludeFiles))
+    xml.enabled = true
+    html.enabled = true
+    csv.enabled = false
   }
-  sourceDirectories = files(coverageSourceDirs)
-  executionData = files "${buildDir}/jacoco/testDebugUnitTest.exec"
+  getSourceDirectories().from = files(coverageSourceDirs)
+  getClassDirectories().from = files(
+      fileTree(
+          dir: "${buildDir}/intermediates/javac/debug/classes",
+          exclude: coverageExcludeFiles))
+  getExecutionData().from = files("${buildDir}/jacoco/testDebugUnitTest.exec")
 
   doLast {
     println "jacoco xml report has been generated to file://${buildDir}/reports/jacoco/test/jacocoTestReportDebug.xml"
