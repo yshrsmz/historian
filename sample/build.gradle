@@ -1,18 +1,16 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.github.ben-manes.versions'
 
 apply from: '../gradle/dependencies.gradle'
 
 android {
-  compileSdkVersion 25
-  buildToolsVersion "25.0.2"
+  compileSdkVersion 30
   defaultConfig {
     applicationId "net.yslibrary.historian.sample"
     minSdkVersion 15
-    targetSdkVersion 25
+    targetSdkVersion 30
     versionCode 1
     versionName "1.0"
-    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
   }
   buildTypes {
     release {
@@ -23,15 +21,11 @@ android {
 }
 
 dependencies {
-  compile deps.appcompat
-  compile deps.design
-  compile deps.stetho
-  compile deps.timber
-  compile project(':historian-core')
-  compile project(':historian-tree')
+  implementation deps.appcompat
+  implementation deps.design
+  implementation deps.timber
+  implementation project(':historian-core')
+  implementation project(':historian-tree')
 
-  androidTestCompile(deps.espresso, {
-    exclude group: 'com.android.support', module: 'support-annotations'
-  })
-  testCompile deps.junit
+  testImplementation deps.junit
 }

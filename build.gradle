@@ -2,23 +2,27 @@
 apply from: project.file("gradle/version/version.gradle")
 apply from: project.file("gradle/metadata.gradle")
 
+apply plugin: 'com.github.ben-manes.versions'
+
 buildscript {
   repositories {
+    mavenCentral()
+    google()
     jcenter()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:2.3.2'
+    classpath 'com.android.tools.build:gradle:4.1.2'
 
     // NOTE: Do not place your application dependencies here; they belong
     // in the individual module build.gradle files
-    classpath 'com.novoda:bintray-release:0.4.0'
-    classpath 'com.github.ben-manes:gradle-versions-plugin:0.13.0'
-    classpath 'org.jacoco:org.jacoco.core:0.7.7.201606060606'
+    classpath 'com.github.ben-manes:gradle-versions-plugin:0.36.0'
   }
 }
 
 allprojects {
   repositories {
+    mavenCentral()
+    google()
     jcenter()
   }
 }
@@ -59,5 +63,24 @@ task releng {
     println "> git push origin ${tag}"
     shell "git push origin ${tag}"
     shell "git push origin master"
+  }
+}
+
+wrapper {
+  gradleVersion = '6.8.3'
+  //noinspection UnnecessaryQualifiedReference
+  distributionType = Wrapper.DistributionType.ALL
+}
+
+def isNonStable = { String version ->
+  def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }
+  def regex = /^[0-9,.v-]+(-r)?$/
+  return !stableKeyword && !(version ==~ regex)
+}
+
+tasks.named("dependencyUpdates").configure {
+  // Example 1: reject all non stable versions
+  rejectVersionIf {
+    isNonStable(it.candidate.version)
   }
 }

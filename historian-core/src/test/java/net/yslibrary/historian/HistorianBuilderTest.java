@@ -6,19 +6,20 @@ import android.util.Log;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
  * Created by yshrsmz on 2017/01/22.
  */
-@RunWith(ConfiguredRobolectricTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class HistorianBuilderTest {
 
   private Context context;
@@ -73,7 +74,7 @@ public class HistorianBuilderTest {
     assertThat(historian.callbacks, instanceOf(TestCallbacks.class));
   }
 
-  class TestCallbacks implements Historian.Callbacks {
+  static class TestCallbacks implements Historian.Callbacks {
 
     @Override
     public void onSuccess() {

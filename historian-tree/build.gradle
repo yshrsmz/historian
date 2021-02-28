@@ -1,20 +1,17 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.ben-manes.versions'
-apply plugin: 'com.novoda.bintray-release'
 
 apply from: '../gradle/dependencies.gradle'
 
 android {
-  compileSdkVersion 25
-  buildToolsVersion "25.0.2"
+  compileSdkVersion 30
 
   defaultConfig {
     minSdkVersion 15
-    targetSdkVersion 25
+    targetSdkVersion 30
     versionCode 1
     versionName "1.0"
 
-    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
   }
   buildTypes {
@@ -23,27 +20,27 @@ android {
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
   }
+
+  buildFeatures {
+    buildConfig = false
+  }
 }
 
 dependencies {
-  compile project(':historian-core')
-  provided deps.timber
+  implementation project(':historian-core')
+  compileOnly deps.timber
 
-  androidTestCompile(deps.espresso, {
-    exclude group: 'com.android.support', module: 'support-annotations'
-  })
-
-  testCompile deps.junit
+  testImplementation deps.junit
 }
 
-publish {
-  artifactId = 'historian-tree'
-  desc = 'Timber(Logging library for Android) Tree implementation for Historian'
-
-  def metadata = project.rootProject.ext.metadata
-  groupId = metadata.groupId
-  publishVersion = metadata.version
-  website = metadata.website
-  repository = metadata.repository
-  licences = metadata.licences
-}
+//publish {
+//  artifactId = 'historian-tree'
+//  desc = 'Timber(Logging library for Android) Tree implementation for Historian'
+//
+//  def metadata = project.rootProject.ext.metadata
+//  groupId = metadata.groupId
+//  publishVersion = metadata.version
+//  website = metadata.website
+//  repository = metadata.repository
+//  licences = metadata.licences
+//}

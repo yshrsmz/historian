@@ -2,7 +2,7 @@ package net.yslibrary.historian;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.annotation.CheckResult;
+import androidx.annotation.CheckResult;
 import android.util.Log;
 
 import net.yslibrary.historian.internal.DbOpenHelper;

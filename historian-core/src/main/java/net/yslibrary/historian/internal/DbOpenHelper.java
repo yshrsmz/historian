@@ -26,6 +26,7 @@ public class DbOpenHelper extends SQLiteOpenHelper {
     if (oldVersion == 1) {
       db.execSQL(LogTable.DROP_TABLE);
       db.execSQL(LogTable.CREATE_TABLE);
+      //noinspection UnusedAssignment
       oldVersion++;
     }
   }
