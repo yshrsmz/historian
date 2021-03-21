@@ -1,6 +1,8 @@
 apply plugin: 'com.android.library'
 
+
 apply from: '../gradle/dependencies.gradle'
+apply from: '../gradle/maven-publish.gradle'
 
 android {
   compileSdkVersion 30
@@ -32,15 +34,3 @@ dependencies {
 
   testImplementation deps.junit
 }
-
-//publish {
-//  artifactId = 'historian-tree'
-//  desc = 'Timber(Logging library for Android) Tree implementation for Historian'
-//
-//  def metadata = project.rootProject.ext.metadata
-//  groupId = metadata.groupId
-//  publishVersion = metadata.version
-//  website = metadata.website
-//  repository = metadata.repository
-//  licences = metadata.licences
-//}
