@@ -5,16 +5,18 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
-import androidx.annotation.NonNull;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import net.yslibrary.historian.Historian;
 
@@ -38,11 +40,11 @@ public class MainActivity extends AppCompatActivity {
     Toolbar toolbar = findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
 
-    FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+    FloatingActionButton fab = findViewById(R.id.fab);
     fab.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        for (int i = 0, l = 100; i < 100; i++) {
+        for (int i = 0; i < 100; i++) {
           Timber.i("test: %d", counter.getAndIncrement());
         }
       }
@@ -96,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
   public void export(Context context, Historian historian) {
     File dir = new File(Environment.getExternalStorageDirectory(), "HistorianSample");
     if (!dir.exists()) {
+      //noinspection ResultOfMethodCallIgnored
       dir.mkdir();
     }
     String dbPath = historian.dbPath();
@@ -108,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
     File file = new File(exportPath);
 
     // delete if exists
+    //noinspection ResultOfMethodCallIgnored
     file.delete();
     try {
       fis = new FileInputStream(dbFile);
