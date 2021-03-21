@@ -25,10 +25,6 @@ allprojects {
   }
 }
 
-ext {
-  metadata.version = ext.versionName()
-}
-
 task clean(type: Delete) {
   delete rootProject.buildDir
 }
