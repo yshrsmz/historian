@@ -2,6 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'jacoco'
 
 apply from: '../gradle/dependencies.gradle'
+apply from: '../gradle/maven-publish.gradle'
 
 // CI
 def isCi = "true".equals(System.getenv("CI"))
@@ -55,18 +56,6 @@ dependencies {
   testCompileOnly deps.autoService.annotation
   testAnnotationProcessor deps.autoService.compiler
 }
-
-//publish {
-//  artifactId = 'historian-core'
-//  desc = "a simple logger which saves logs to SQLite, to get better understanding of user's environment"
-//
-//  def metadata = project.rootProject.ext.metadata
-//  groupId = metadata.groupId
-//  publishVersion = metadata.version
-//  website = metadata.website
-//  repository = metadata.repository
-//  licences = metadata.licences
-//}
 
 // A list of directories which should be included in coverage report
 def coverageSourceDirs = ['src/main/java']

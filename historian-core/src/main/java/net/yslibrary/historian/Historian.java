@@ -2,8 +2,9 @@ package net.yslibrary.historian;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import androidx.annotation.CheckResult;
 import android.util.Log;
+
+import androidx.annotation.CheckResult;
 
 import net.yslibrary.historian.internal.DbOpenHelper;
 import net.yslibrary.historian.internal.LogEntity;
@@ -273,7 +274,7 @@ public class Historian {
      * Specify callbacks. This callbacks are called each time Historian save a log.
      * This callbacks are called on background thread.
      * <p>
-     * Default is {@link DefaultCallbacks}
+     * Default is {@link Historian.DefaultCallbacks}
      *
      * @param callbacks callbacks to execute.
      * @return Builder

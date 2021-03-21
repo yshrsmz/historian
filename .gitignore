@@ -18,3 +18,6 @@ google-services.json
 
 !.idea/codeStyleSettings.xml
 jacoco.exec
+
+.envrc
+*-sec.asc
