@@ -63,7 +63,7 @@ def coverageSourceDirs = ['src/main/java']
 def coverageExcludeFiles = ['**/R.class', '**/R$*.class', '**/com/android/**/*.*']
 
 jacoco {
-  toolVersion = "0.8.12"
+  toolVersion = "0.8.14"
 }
 
 // https://issuetracker.google.com/issues/178015739
