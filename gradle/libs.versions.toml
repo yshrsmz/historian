@@ -11,7 +11,7 @@ mavenPublish = "0.30.0"
 # AndroidX
 annotation = "1.9.1"
 appcompat = "1.7.0"
-testCore = "1.6.1"
+testCore = "1.7.0"
 
 # Libraries
 material = "1.12.0"
