@@ -1,7 +1,8 @@
-apply plugin: 'com.android.library'
-apply plugin: 'jacoco'
+plugins {
+  alias(libs.plugins.android.library)
+  id 'jacoco'
+}
 
-apply from: '../gradle/dependencies.gradle'
 apply from: '../gradle/maven-publish.gradle'
 
 // CI
@@ -10,11 +11,11 @@ def preDexEnabled = "true".equals(System.getProperty("pre-dex", "true"))
 
 android {
   namespace 'net.yslibrary.historian'
-  compileSdk 35
+  compileSdk libs.versions.compileSdk.get().toInteger()
 
   defaultConfig {
-    minSdk 21
-    targetSdk 35
+    minSdk libs.versions.minSdk.get().toInteger()
+    targetSdk libs.versions.targetSdk.get().toInteger()
 
     testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
   }
@@ -48,13 +49,13 @@ android {
 }
 
 dependencies {
-  implementation deps.annotation
+  implementation libs.annotation
 
-  testImplementation deps.junit
-  testImplementation deps.robolectric
-  testImplementation deps.testCore
-  testCompileOnly deps.autoService.annotation
-  testAnnotationProcessor deps.autoService.compiler
+  testImplementation libs.junit
+  testImplementation libs.robolectric
+  testImplementation libs.test.core
+  testCompileOnly libs.autoservice.annotations
+  testAnnotationProcessor libs.autoservice.compiler
 }
 
 // A list of directories which should be included in coverage report
@@ -63,7 +64,7 @@ def coverageSourceDirs = ['src/main/java']
 def coverageExcludeFiles = ['**/R.class', '**/R$*.class', '**/com/android/**/*.*']
 
 jacoco {
-  toolVersion = "0.8.12"
+  toolVersion = libs.versions.jacoco.get()
 }
 
 // https://issuetracker.google.com/issues/178015739

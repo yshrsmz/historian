@@ -1,15 +1,15 @@
-apply plugin: 'com.android.application'
-
-apply from: '../gradle/dependencies.gradle'
+plugins {
+  alias(libs.plugins.android.application)
+}
 
 android {
   namespace 'net.yslibrary.historian.sample'
-  compileSdk 35
+  compileSdk libs.versions.compileSdk.get().toInteger()
 
   defaultConfig {
     applicationId "net.yslibrary.historian.sample"
-    minSdk 21
-    targetSdk 35
+    minSdk libs.versions.minSdk.get().toInteger()
+    targetSdk libs.versions.targetSdk.get().toInteger()
     versionCode 1
     versionName "1.0"
     testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
@@ -29,11 +29,11 @@ android {
 }
 
 dependencies {
-  implementation deps.appcompat
-  implementation deps.design
-  implementation deps.timber
+  implementation libs.appcompat
+  implementation libs.material
+  implementation libs.timber
   implementation project(':historian-core')
   implementation project(':historian-tree')
 
-  testImplementation deps.junit
+  testImplementation libs.junit
 }

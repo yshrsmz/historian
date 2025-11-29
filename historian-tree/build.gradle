@@ -1,16 +1,16 @@
-apply plugin: 'com.android.library'
+plugins {
+  alias(libs.plugins.android.library)
+}
 
-
-apply from: '../gradle/dependencies.gradle'
 apply from: '../gradle/maven-publish.gradle'
 
 android {
   namespace 'net.yslibrary.historian.tree'
-  compileSdk 35
+  compileSdk libs.versions.compileSdk.get().toInteger()
 
   defaultConfig {
-    minSdk 21
-    targetSdk 35
+    minSdk libs.versions.minSdk.get().toInteger()
+    targetSdk libs.versions.targetSdk.get().toInteger()
 
     testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
   }
@@ -34,7 +34,7 @@ android {
 
 dependencies {
   implementation project(':historian-core')
-  compileOnly deps.timber
+  compileOnly libs.timber
 
-  testImplementation deps.junit
+  testImplementation libs.junit
 }
