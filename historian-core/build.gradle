@@ -9,30 +9,29 @@ def isCi = "true".equals(System.getenv("CI"))
 def preDexEnabled = "true".equals(System.getProperty("pre-dex", "true"))
 
 android {
-  compileSdkVersion 30
+  namespace 'net.yslibrary.historian'
+  compileSdk 35
 
   defaultConfig {
-    minSdkVersion 15
-    targetSdkVersion 30
-    versionCode 1
-    versionName "1.0"
+    minSdk 21
+    targetSdk 35
 
     testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-
   }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_11
+    targetCompatibility JavaVersion.VERSION_11
+  }
+
   buildTypes {
     debug {
       testCoverageEnabled true
     }
     release {
       minifyEnabled false
-      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
     }
-  }
-
-  dexOptions {
-    // Skip pre-dexing when running on CI or when disabled via -Dpre-dex=false.
-    preDexLibraries = preDexEnabled && !isCi
   }
 
   testOptions {
@@ -53,6 +52,7 @@ dependencies {
 
   testImplementation deps.junit
   testImplementation deps.robolectric
+  testImplementation deps.testCore
   testCompileOnly deps.autoService.annotation
   testAnnotationProcessor deps.autoService.compiler
 }
@@ -63,7 +63,7 @@ def coverageSourceDirs = ['src/main/java']
 def coverageExcludeFiles = ['**/R.class', '**/R$*.class', '**/com/android/**/*.*']
 
 jacoco {
-  toolVersion = "0.8.6"
+  toolVersion = "0.8.12"
 }
 
 // https://issuetracker.google.com/issues/178015739
@@ -81,9 +81,9 @@ task jacocoTestReportDebug(
 ) {
   description = "Generate Jacoco coverage reports after running tests."
   reports {
-    xml.enabled = true
-    html.enabled = true
-    csv.enabled = false
+    xml.required = true
+    html.required = true
+    csv.required = false
   }
   getSourceDirectories().from = files(coverageSourceDirs)
   getClassDirectories().from = files(
@@ -94,6 +94,6 @@ task jacocoTestReportDebug(
 
   doLast {
     println "jacoco xml report has been generated to file://${buildDir}/reports/jacoco/test/jacocoTestReportDebug.xml"
-    println "jacoco html report has been generated to file://${reports.html.destination}/index.html"
+    println "jacoco html report has been generated to file://${reports.html.outputLocation.get().asFile}/index.html"
   }
 }

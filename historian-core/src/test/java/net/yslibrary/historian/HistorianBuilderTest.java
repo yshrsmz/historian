@@ -3,11 +3,12 @@ package net.yslibrary.historian;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -26,7 +27,7 @@ public class HistorianBuilderTest {
 
   @Before
   public void setup() {
-    context = RuntimeEnvironment.application;
+    context = ApplicationProvider.getApplicationContext();
   }
 
   @Test

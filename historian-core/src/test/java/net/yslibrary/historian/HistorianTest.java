@@ -3,14 +3,14 @@ package net.yslibrary.historian;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
 import android.util.Log;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import java.util.concurrent.ExecutionException;
@@ -32,7 +32,7 @@ public class HistorianTest {
 
   @Before
   public void setup() {
-    Context context = RuntimeEnvironment.application;
+    Context context = ApplicationProvider.getApplicationContext();
 
     historian = Historian.builder(context).build();
   }
@@ -95,12 +95,7 @@ public class HistorianTest {
   }
 
   @Test
-  @Config(sdk = {
-      Build.VERSION_CODES.JELLY_BEAN,
-      Build.VERSION_CODES.KITKAT,
-      Build.VERSION_CODES.LOLLIPOP,
-      Build.VERSION_CODES.M,
-      Build.VERSION_CODES.N})
+  @Config(sdk = {21, 23, 24, 28, 33})
   public void log_background() throws ExecutionException, InterruptedException {
     historian.initialize();
 
