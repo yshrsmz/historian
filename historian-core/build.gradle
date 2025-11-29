@@ -54,8 +54,6 @@ dependencies {
   testImplementation libs.junit
   testImplementation libs.robolectric
   testImplementation libs.test.core
-  testCompileOnly libs.autoservice.annotations
-  testAnnotationProcessor libs.autoservice.compiler
 }
 
 // A list of directories which should be included in coverage report
