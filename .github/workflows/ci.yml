@@ -1,4 +1,4 @@
-name: PR or PUSH
+name: CI
 
 on:
   push:

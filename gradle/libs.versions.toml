@@ -21,9 +21,6 @@ timber = "5.0.1"
 junit = "4.13.2"
 robolectric = "4.14.1"
 
-# Code Generation
-autoService = "1.1.1"
-
 # Tools
 jacoco = "0.8.12"
 
@@ -37,10 +34,6 @@ timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 junit = { module = "junit:junit", version.ref = "junit" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 test-core = { module = "androidx.test:core", version.ref = "testCore" }
-
-# AutoService
-autoservice-annotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "autoService" }
-autoservice-compiler = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
