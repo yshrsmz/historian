@@ -53,4 +53,4 @@ Historian is an Android library that provides a custom Timber.Tree implementatio
 
 ## Configuration
 
-Version is managed in `gradle.properties` (`VERSION_NAME`). Dependencies are centralized in `gradle/dependencies.gradle`.
+Version is managed in `gradle.properties` (`VERSION_NAME`). Dependencies are centralized in `gradle/libs.versions.toml` (Gradle Version Catalog).
