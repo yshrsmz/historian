@@ -1,0 +1,60 @@
+name: 'Setup Build Environment'
+description: 'Setup Java, CI Gradle properties, and Gradle for CI builds'
+inputs:
+  cache-read-only:
+    description: 'Whether the Gradle cache should be read-only (true for PRs)'
+    required: false
+    default: 'false'
+outputs:
+  tools:
+    description: 'tools table from mise.toml'
+    value: ${{ steps.mise.outputs.tools }}
+  java_distribution:
+    description: 'target java distribution'
+    value: ${{ steps.java.outputs.distribution }}
+  java_version:
+    description: 'target java version'
+    value: ${{ steps.java.outputs.version }}
+runs:
+  using: 'composite'
+  steps:
+    - uses: yshrsmz/action-mise-values@cd1f437a7bd3815ac1f0f15dcf949fea419a3d2d # v0.2.0
+      id: mise
+
+    - name: 'format value for actions/setup-java'
+      id: java
+      shell: bash
+      env:
+        # java version with distribution. e.g. temurin-17.0.16+8
+        JAVA_VERSION_STRING: ${{ fromJSON(steps.mise.outputs.tools).java }}
+      run: |
+        # split JAVA_VERSION_STRING into two: version and distribution
+        # Extract distribution (everything before the dash)
+        DISTRIBUTION=$(echo "$JAVA_VERSION_STRING" | cut -d'-' -f1)
+        # Extract version (everything after the dash)
+        VERSION=$(echo "$JAVA_VERSION_STRING" | cut -d'-' -f2-)
+
+        echo "distribution=$DISTRIBUTION" >> "$GITHUB_OUTPUT"
+        echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+        echo "Java distribution: $DISTRIBUTION"
+        echo "Java version: $VERSION"
+
+    - uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
+      with:
+        distribution: ${{ steps.java.outputs.distribution }}
+        java-version: ${{ steps.java.outputs.version }}
+
+    - name: Copy CI gradle.properties
+      shell: bash
+      run: mkdir -p ~/.gradle && cp .github/ci-gradle.properties ~/.gradle/gradle.properties
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # v5.0.0
+      with:
+        validate-wrappers: true
+        cache-cleanup: on-success
+        cache-read-only: ${{ inputs.cache-read-only }}
+        build-scan-publish: true
+        build-scan-terms-of-use-url: "https://gradle.com/terms-of-service"
+        build-scan-terms-of-use-agree: "yes"
