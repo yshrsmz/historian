@@ -1,0 +1,5 @@
+[tools]
+java = "temurin-17.0.17+10"
+
+[env]
+# Ruby environment variables if needed

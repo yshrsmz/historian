@@ -3,19 +3,27 @@ apply plugin: 'com.android.application'
 apply from: '../gradle/dependencies.gradle'
 
 android {
-  compileSdkVersion 30
+  namespace 'net.yslibrary.historian.sample'
+  compileSdk 35
+
   defaultConfig {
     applicationId "net.yslibrary.historian.sample"
-    minSdkVersion 15
-    targetSdkVersion 30
+    minSdk 21
+    targetSdk 35
     versionCode 1
     versionName "1.0"
     testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
   }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_11
+    targetCompatibility JavaVersion.VERSION_11
+  }
+
   buildTypes {
     release {
       minifyEnabled false
-      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
     }
   }
 }
