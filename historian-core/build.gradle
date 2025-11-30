@@ -1,9 +1,8 @@
 plugins {
   alias(libs.plugins.android.library)
+  alias(libs.plugins.maven.publish)
   id 'jacoco'
 }
-
-apply from: '../gradle/maven-publish.gradle'
 
 // CI
 def isCi = "true".equals(System.getenv("CI"))
@@ -94,5 +93,22 @@ task jacocoTestReportDebug(
   doLast {
     println "jacoco xml report has been generated to file://${buildDir}/reports/jacoco/test/jacocoTestReportDebug.xml"
     println "jacoco html report has been generated to file://${reports.html.outputLocation.get().asFile}/index.html"
+  }
+}
+
+mavenPublishing {
+  publishToMavenCentral()
+  signAllPublications()
+
+  coordinates(
+    project.property("GROUP").toString(),
+    project.property("POM_ARTIFACT_ID").toString(),
+    project.property("VERSION_NAME").toString()
+  )
+
+  pom {
+    name = project.property("POM_NAME").toString()
+    description = project.property("POM_DESCRIPTION").toString()
+    url = project.property("POM_URL").toString()
   }
 }
