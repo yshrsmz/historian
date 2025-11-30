@@ -12,6 +12,7 @@ import java.io.File
 import java.io.IOException
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 /**
  * Historian
@@ -55,18 +56,50 @@ class Historian private constructor(
     }
 
     /**
-     * Terminate Historian
+     * Terminate Historian immediately.
      * This method will perform;
-     * - shutdown the background executor
+     * - shutdown the background executor (pending writes may be lost)
      * - close underlying [DbOpenHelper]
      *
      * After calling this method, all calls to this instance of [Historian]
      * can produce exception or undefined behavior.
+     *
+     * @see terminateSafe for graceful shutdown that waits for pending writes
      */
     fun terminate() {
         checkInitialized()
         executorService.shutdown()
         dbOpenHelper.close()
+    }
+
+    /**
+     * Terminate Historian gracefully.
+     * This method will block until pending log writes complete or timeout elapses.
+     * - shutdown the background executor
+     * - wait for pending log writes to complete (up to [timeoutSeconds])
+     * - close underlying [DbOpenHelper]
+     *
+     * After calling this method, all calls to this instance of [Historian]
+     * can produce exception or undefined behavior.
+     *
+     * Note: This method blocks the calling thread. Call from a background thread
+     * if blocking is not acceptable.
+     *
+     * @param timeoutSeconds maximum time to wait for pending writes (default: 5 seconds)
+     * @return true if all pending writes completed, false if timeout elapsed
+     */
+    @JvmOverloads
+    fun terminateSafe(timeoutSeconds: Long = 5): Boolean {
+        checkInitialized()
+        executorService.shutdown()
+        val completed = try {
+            executorService.awaitTermination(timeoutSeconds, TimeUnit.SECONDS)
+        } catch (e: InterruptedException) {
+            Thread.currentThread().interrupt()
+            false
+        }
+        dbOpenHelper.close()
+        return completed
     }
 
     /**
