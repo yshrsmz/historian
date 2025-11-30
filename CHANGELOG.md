@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0](https://github.com/yshrsmz/historian/compare/historian-v0.5.0...historian-v0.6.0) (2025-11-30)
+
+
+### Features
+
+* Migrate library from Java to Kotlin ([#31](https://github.com/yshrsmz/historian/issues/31)) ([f66eb77](https://github.com/yshrsmz/historian/commit/f66eb773d77ccb8fc56a5cd65799f457176e731d))
+
+
+### Bug Fixes
+
+* **deps:** update dependency androidx.appcompat:appcompat to v1.7.1 ([6b53233](https://github.com/yshrsmz/historian/commit/6b5323354e1e0d61248a392ee3d73997c75a6ec5))
+* **deps:** update dependency com.google.android.material:material to v1.13.0 ([#24](https://github.com/yshrsmz/historian/issues/24)) ([8d669b6](https://github.com/yshrsmz/historian/commit/8d669b695218821cb8c739736406198b9ec18c68))
+* **deps:** update dependency org.robolectric:robolectric to v4.16 ([#25](https://github.com/yshrsmz/historian/issues/25)) ([dde3856](https://github.com/yshrsmz/historian/commit/dde3856dff6fd66c2e58390ac49fc634863b92fe))
+* make signing conditional on credential availability ([2168b9f](https://github.com/yshrsmz/historian/commit/2168b9ff5c10df6f55b4a246f8340db95adc8691))
+* properly close resources in unit tests to eliminate CloseGuard warnings ([8aabaec](https://github.com/yshrsmz/historian/commit/8aabaecc3f3cc5c23f26e0e2252471e7ebe995b0))
+
+
+### Dependencies
+
+* update dependency org.jetbrains.kotlin.android to v2.2.21 ([#32](https://github.com/yshrsmz/historian/issues/32)) ([6ae5c88](https://github.com/yshrsmz/historian/commit/6ae5c88660b842e12e82215fdd041492fa0ab002))
+
+
+### Documentation
+
+* add conventional commits section to CLAUDE.md ([57aca18](https://github.com/yshrsmz/historian/commit/57aca18fdc076198b3d1486702e42534b0836a9d))
+* update documentation for release-please and v0.5.0 ([d062491](https://github.com/yshrsmz/historian/commit/d062491569f722231d6b52558352d46b2909e0ed))
+
 ## [0.5.0](https://github.com/yshrsmz/historian/compare/historian-v0.4.0...historian-v0.5.0) (2025-11-30)
 
 
