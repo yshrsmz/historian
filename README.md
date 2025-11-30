@@ -8,17 +8,33 @@ Historian is a custom [Timber](https://github.com/JakeWharton/timber).Tree imple
 
 This library is primarily made to help debugging crash in consumers' devices.
 
+## Requirements
+
+- minSdk 21+
+
 ## Installation
 
 Historian is distributed via Maven Central. [![Maven Central](https://maven-badges.herokuapp.com/maven-central/net.yslibrary.historian/historian-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/net.yslibrary.historian/historian-core)
 
-```gradle
+```kotlin
 dependencies {
-  compile 'net.yslibrary.historian:historian-core:LATEST_LIBRARY_VERSION'
-  compile 'net.yslibrary.historian:historian-tree:LATEST_LIBRARY_VERSION'
-  compile 'com.jakewharton.timber:timber:4.5.1'
+  implementation("net.yslibrary.historian:historian-core:0.5.0")
+  implementation("net.yslibrary.historian:historian-tree:0.5.0")
+  implementation("com.jakewharton.timber:timber:5.0.1")
 }
 ```
+
+<details>
+<summary>Groovy DSL</summary>
+
+```gradle
+dependencies {
+  implementation 'net.yslibrary.historian:historian-core:0.5.0'
+  implementation 'net.yslibrary.historian:historian-tree:0.5.0'
+  implementation 'com.jakewharton.timber:timber:5.0.1'
+}
+```
+</details>
 
 ## Usage
 
@@ -71,7 +87,7 @@ CREATE TABLE log(
 ## License
 
 ```
-Copyright 2017-2021 Yasuhiro SHIMIZU (yshrsmz)
+Copyright 2017-2025 Yasuhiro SHIMIZU (yshrsmz)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

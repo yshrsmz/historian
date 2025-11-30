@@ -25,15 +25,16 @@ All tests must pass.
 
 ## For Version Changes
 
-### Update Version
-- Edit `VERSION_NAME` in `gradle.properties`
-- Update `CHANGELOG.md` if applicable
+Version changes are handled automatically by [release-please](https://github.com/googleapis/release-please).
+Just use [Conventional Commits](https://www.conventionalcommits.org/) and release-please will:
+- Update `VERSION_NAME` in `gradle.properties`
+- Update `CHANGELOG.md`
 
 ## For Dependency Updates
 
 ### Dependencies Location
-- All dependencies centralized in `gradle/dependencies.gradle`
-- Update there first, then reference via `deps.xxx` in module build files
+- All dependencies centralized in `gradle/libs.versions.toml` (Gradle Version Catalog)
+- Update versions there, then reference via `libs.xxx` in module build files
 
 ## Coverage Report (Optional)
 ```bash
