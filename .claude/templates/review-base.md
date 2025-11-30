@@ -1,6 +1,6 @@
 # Code Review Prompt Template
 
-This template provides guidelines for generating customized code review prompts. Commands should use this as a reference to build agent-specific prompts, NOT copy it verbatim.
+This template provides guidelines for generating customized code review prompts for the Historian Android library. Commands should use this as a reference to build agent-specific prompts, NOT copy it verbatim.
 
 ## How to Use This Template
 
@@ -8,7 +8,7 @@ When generating a review prompt:
 1. **Read this template** to understand the structure and requirements
 2. **Customize for the agent type**:
    - Add agent-specific context (tools available, execution environment)
-   - Emphasize relevant expertise (Android/Compose for android-compose-architect)
+   - Emphasize relevant expertise (Android library development, API design)
    - Adjust technical depth based on agent capabilities
 3. **Include session context**: Working directory, current branch, project specifics
 4. **Adapt review focus**: Prioritize checks based on what the agent does best
@@ -21,7 +21,7 @@ All review commands (agent-review, codex-review) should follow these common step
 
 The review can examine:
 - Current workspace changes (staged and unstaged)
-- Entire branch context (all commits since branching from main)
+- Entire branch context (all commits since branching from master)
 - Committed files for full context when needed
 
 ### Step 1: Verify Changes Exist
@@ -31,17 +31,15 @@ Run `git status` to confirm there are changes to review
 ### Step 2: Read Project Documentation (Optional)
 
 If relevant to the changes, read project-specific documentation:
-- `docs/mvi-architecture.md` - MVI architecture details (if exists)
-- `.spec-workflow/` - Current specification documents (if any exist)
-- `build-logic/README.md` - Build system conventions (if changes involve build config)
-- Any task-specific documentation from `.spec-workflow/specs/` related to the changes
+- `CLAUDE.md` - Project overview and build commands
+- Serena memories (if available) - Architecture and conventions
 
 ### Step 3: Gather Current Context
 
 Before generating the prompt, gather:
 - Current working directory: `pwd`
 - Current branch name: `git rev-parse --abbrev-ref HEAD`
-- Main branch name: typically `master` or `main`
+- Main branch name: `master`
 
 ### Step 4: Generate Customized Prompt
 
@@ -55,11 +53,11 @@ Before generating the prompt, gather:
 2. **Includes actual context values**
    - Replace `[PROJECT_PATH]` with actual working directory (from pwd)
    - Replace `[BRANCH_NAME]` with current branch name (from git)
-   - Replace `[MAIN_BRANCH]` with main branch name (typically "master" or "main")
+   - Replace `[MAIN_BRANCH]` with `master`
    - Add project-specific architecture details (see Review Prompt Structure section below)
 
 3. **Incorporates template sections** with placeholders replaced:
-   - Git analysis instructions (section 2) - replace `[MAIN_BRANCH]` with actual branch
+   - Git analysis instructions (section 2) - replace `[MAIN_BRANCH]` with `master`
    - Project documentation references (section 3)
    - Review criteria (section 4) - emphasize based on agent type
    - Agent-specific focus areas (section 5)
@@ -68,7 +66,7 @@ Before generating the prompt, gather:
 4. **Emphasizes the agent/backend's specific strengths**
    - For Task agents: mention available tools (Bash, Read, etc.)
    - For Codex: mention separate execution environment, extensive git access
-   - For android-compose-architect: emphasize Android/Compose expertise
+   - For android-library-reviewer: emphasize Android library development, API design
 
 ### Prompt Requirements
 
@@ -82,7 +80,7 @@ The generated prompt must be:
 
 ### 1. Introduction & Context
 ```
-You are [AGENT_TYPE] reviewing code changes for this project.
+You are [AGENT_TYPE] reviewing code changes for the Historian Android library.
 
 You are running in [EXECUTION_ENVIRONMENT] with access to:
 - [LIST_OF_TOOLS_AVAILABLE]
@@ -91,8 +89,12 @@ You are running in [EXECUTION_ENVIRONMENT] with access to:
 Project context:
 - Working directory: [PROJECT_PATH]
 - Current branch: [BRANCH_NAME]
-- Main branch: [MAIN_BRANCH]
+- Main branch: master
 
+Project overview:
+- Historian is an Android library that saves Timber logs to SQLite for debugging
+- Multi-module structure: historian-core, historian-tree, sample
+- Key classes: Historian (main API), HistorianTree (Timber adapter), LogWriter (persistence)
 ```
 
 ### 2. Git Analysis Instructions
@@ -106,9 +108,9 @@ IMPORTANT: First, run git commands to understand what changed:
 - `git diff --stat` and `git diff --cached --stat` - for change summaries
 
 **Step 2: Check branch context (if necessary)**
-- `git log [MAIN_BRANCH]..HEAD --oneline` - to see all commits in the current branch
-- `git diff [MAIN_BRANCH]...HEAD --stat` - to see all changes in the branch (summary)
-- `git diff [MAIN_BRANCH]...HEAD` - to see full diff of all branch changes
+- `git log master..HEAD --oneline` - to see all commits in the current branch
+- `git diff master...HEAD --stat` - to see all changes in the branch (summary)
+- `git diff master...HEAD` - to see full diff of all branch changes
 
 **Step 3: Read files for context (when needed)**
 - Use [AVAILABLE_READ_TOOL] to read the committed files for full context
@@ -122,9 +124,7 @@ IMPORTANT: First, run git commands to understand what changed:
 ### 3. Project Documentation References
 ```
 Read any relevant project-specific documentation for additional context:
-- docs/mvi-architecture.md - MVI architecture patterns (if changes involve MVI)
-- .spec-workflow/ - Check for active specifications related to these changes
-- build-logic/README.md - Build system conventions (if changes involve build config)
+- CLAUDE.md - Project overview, build commands, git conventions
 ```
 
 ### 4. Review Criteria
@@ -135,45 +135,41 @@ Customize this section based on agent expertise. Include all relevant criteria, 
 Review ALL changes (both staged and unstaged) and analyze them for:
 
 1. **Code Quality**:
-   - Adherence to Kotlin coding standards
-   - Named parameters usage (mandatory for multi-param calls)
-   - No fully qualified names (proper imports required)
+   - Adherence to Kotlin coding standards and idioms
+   - Proper use of Kotlin features (data classes, extension functions, null safety)
    - Code readability and maintainability
 
-2. **Architecture**:
-   - MVI pattern compliance (Store/Reducer/Processor)
-   - Clean architecture principles
-   - Module boundaries and dependencies
-   - Proper separation of concerns
+2. **API Design** (for library code):
+   - Java interoperability (@JvmStatic, @JvmField, @JvmOverloads)
+   - Builder pattern consistency
+   - Public API surface (avoid exposing internals)
+   - Backwards compatibility
 
 3. **Android Best Practices**:
-   - Jetpack Compose usage (if applicable)
-   - Room database patterns
-   - Coroutines and Flow usage
-   - View binding patterns
+   - SQLite patterns (transactions, statement management)
+   - Thread safety (ExecutorService, @Volatile)
+   - Context handling (avoid Activity leaks)
+   - Resource management (use{} blocks, proper closing)
 
-4. **Testing**:
-   - Test coverage for new/changed code (MANDATORY: all new behavior must have tests)
-   - Test quality and assertions
-   - Use of test utilities from :core:testing
-   - MockK and Turbine usage
-   - Error states and edge cases covered
+4. **Architecture**:
+   - Module boundaries (historian-core, historian-tree, sample)
+   - Separation of concerns
+   - Internal vs public visibility
 
-5. **Potential Issues**:
+5. **Testing**:
+   - Test coverage for new/changed code
+   - Robolectric configuration
+   - Thread safety testing
+
+6. **Potential Issues**:
    - Performance concerns
    - Memory leaks
    - Threading issues
-   - Resource management
+   - Resource leaks (database connections, statements)
 
-6. **Security**:
-   - No hardcoded secrets
-   - Proper data handling
-   - Input validation
-
-7. **Documentation**:
-   - Code comments where necessary
-   - KDoc for public APIs
-   - README updates if needed
+7. **Build Configuration**:
+   - Gradle setup (Kotlin DSL, version catalog)
+   - Dependencies properly configured
 
 Please provide:
 - ✅ What's done well
@@ -186,10 +182,10 @@ Be specific with file paths and line references where possible.
 
 ### 5. Agent-Specific Focus Areas
 
-**For android-compose-architect:**
-- Emphasize: Jetpack Compose best practices, MVI patterns, Android lifecycle, threading
-- Deep dive: Compose recomposition, state management, navigation patterns
-- Catch: Memory leaks in ViewModels, improper Compose usage, lifecycle violations
+**For android-library-reviewer:**
+- Emphasize: API design, Java interop, thread safety, SQLite patterns
+- Deep dive: Public API surface, backwards compatibility, resource management
+- Catch: Context leaks, exposed internals, thread safety issues
 
 **For general-purpose:**
 - Balanced coverage of all criteria
@@ -225,40 +221,36 @@ The review should include:
 
 ### Current Workspace
 Staged:
-- app/src/main/java/com/example/ui/TimerDetailScreen.kt (+156, -89)
-- domain/src/main/java/com/example/domain/GetTimerUseCase.kt (+12, -5)
-- data/repository/src/main/java/com/example/data/TimerRepository.kt (+8, -3)
+- historian-core/src/main/java/net/yslibrary/historian/Historian.kt (+50, -20)
+- historian-core/src/main/java/net/yslibrary/historian/internal/LogWriter.kt (+10, -5)
 
 Unstaged:
-- app/src/test/java/com/example/ui/TimerDetailScreenTest.kt (+45, -0)
+- historian-core/src/test/java/net/yslibrary/historian/HistorianTest.kt (+25, -0)
 
 ### Branch Context (if reviewed)
-Commits in branch (3 commits):
-- abc1234 feat: Add timer detail screen
-- def5678 refactor: Update use case for new requirements
-- ghi9012 test: Add tests for timer detail
+Commits in branch (2 commits):
+- abc1234 feat: Add new logging feature
+- def5678 test: Add tests for new feature
 
 Files changed in entire branch:
-- 8 files changed, 245 insertions(+), 112 deletions(-)
-
-Note: Changes span multiple modules (UI, domain, data) - verify clean architecture boundaries.
+- 5 files changed, 85 insertions(+), 25 deletions(-)
 
 ## Review Results
 
 ✅ What's done well
-- Clean separation of concerns across modules (app, domain, data)
-- Named parameters used consistently at TimerDetailScreen.kt:42, 67, 91
-- Proper MVI state management in TimerDetailScreen.kt:25-35
+- Proper use of @JvmOverloads for Java callers
+- Thread-safe implementation with proper synchronization
+- SQLite statements properly closed with use{}
 
 ⚠️ Issues that should be fixed
-- TimerRepository.kt:45: Missing error handling for database operation
-- GetTimerUseCase.kt:23: Consider adding input validation
+- Historian.kt:45: Missing @JvmStatic annotation for Java callers
+- LogWriter.kt:23: Consider adding transaction for batch operations
 
 💡 Suggestions for improvement
-- TimerDetailScreen.kt:120: Extract complex composable into separate function
-- Consider adding integration test for cross-module flow
+- Consider adding KDoc for new public API methods
+- Could extract complex logic into separate internal function
 
 🔴 Critical problems
-- TimerDetailScreenTest.kt: Missing test coverage for error states
-  (Note: All new/changed behavior must have corresponding tests)
+- Historian.kt:67: Potential context leak - storing Activity reference
+  (Note: Use applicationContext instead)
 ```
