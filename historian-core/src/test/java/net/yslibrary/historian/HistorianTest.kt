@@ -220,7 +220,7 @@ class HistorianTest {
     }
 
     private fun getAllLogs(historian: Historian): Cursor {
-        val db = historian.dbOpenHelper.readableDatabase
+        val db = historian.getDatabase()
         return db.query(
             "log",
             arrayOf("id", "tag", "priority", "message", "created_at"),

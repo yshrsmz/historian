@@ -26,8 +26,6 @@ class HistorianBuilderTest {
         val historian = Historian.builder(context).build()
 
         assertNotNull(historian.context)
-        assertNotNull(historian.dbOpenHelper)
-        assertNotNull(historian.logWriter)
 
         assertEquals(Historian.LOG_LEVEL, historian.logLevel)
         assertEquals(context.filesDir, historian.directory)
@@ -48,8 +46,6 @@ class HistorianBuilderTest {
             .build()
 
         assertNotNull(historian.context)
-        assertNotNull(historian.dbOpenHelper)
-        assertNotNull(historian.logWriter)
 
         assertEquals(Log.DEBUG, historian.logLevel)
         assertEquals(context.getExternalFilesDir(null), historian.directory)

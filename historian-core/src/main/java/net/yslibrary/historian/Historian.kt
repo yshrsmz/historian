@@ -26,8 +26,8 @@ class Historian private constructor(
     val debug: Boolean,
     private val onSuccess: OnSuccessCallback?,
     private val onFailure: OnFailureCallback?,
-    internal val dbOpenHelper: DbOpenHelper,
-    internal val logWriter: LogWriter,
+    private val dbOpenHelper: DbOpenHelper,
+    private val logWriter: LogWriter,
     private val executorService: ExecutorService
 ) {
     @Volatile
@@ -68,6 +68,10 @@ class Historian private constructor(
      *
      * @see terminateSafe for graceful shutdown that waits for pending writes
      */
+    @Deprecated(
+        message = "Use terminateSafe() for graceful shutdown that waits for pending writes",
+        replaceWith = ReplaceWith("terminateSafe()")
+    )
     fun terminate() {
         checkInitialized()
         executorService.shutdown()
@@ -86,8 +90,8 @@ class Historian private constructor(
      *
      * Note: This method blocks the calling thread. Call from a background thread
      * if blocking is not acceptable. If timeout is reached before pending writes
-     * complete, the executor is NOT force-terminated (no shutdownNow()), but the
-     * database will be closed, which may cause errors for any remaining writes.
+     * complete, the executor is force-terminated via shutdownNow() and remaining
+     * tasks are cancelled before the database is closed.
      *
      * @param timeoutSeconds maximum time to wait for pending writes (default: 5 seconds)
      * @return true if all pending writes completed, false if timeout elapsed
@@ -101,6 +105,9 @@ class Historian private constructor(
         } catch (e: InterruptedException) {
             Thread.currentThread().interrupt()
             false
+        }
+        if (!completed) {
+            executorService.shutdownNow()
         }
         dbOpenHelper.close()
         return completed
@@ -258,6 +265,10 @@ class Historian private constructor(
     /**
      * Fluent Builder (Java-compatible)
      */
+    @Deprecated(
+        message = "Use Historian.invoke() DSL instead",
+        replaceWith = ReplaceWith("Historian(context) { /* configure here */ }")
+    )
     class Builder internal constructor(private val context: Context) {
         private val dslBuilder = DslBuilder(context)
 
@@ -365,7 +376,7 @@ class Historian private constructor(
          * Kotlin DSL entry point
          */
         operator fun invoke(context: Context, block: DslBuilder.() -> Unit = {}): Historian =
-            DslBuilder(context).apply(block).build()
+            DslBuilder(context.applicationContext).apply(block).build()
 
         /**
          * Get Builder
@@ -375,6 +386,10 @@ class Historian private constructor(
          */
         @JvmStatic
         @CheckResult
+        @Deprecated(
+            message = "Use Historian.invoke() DSL instead",
+            replaceWith = ReplaceWith("Historian(context) { /* configure here */ }")
+        )
         fun builder(context: Context): Builder = Builder(context)
     }
 }
