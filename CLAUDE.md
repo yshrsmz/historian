@@ -55,6 +55,10 @@ Historian is an Android library that provides a custom Timber.Tree implementatio
 
 Version is managed in `gradle.properties` (`VERSION_NAME`). Dependencies are centralized in `gradle/libs.versions.toml` (Gradle Version Catalog).
 
+## Coding Conventions
+
+- Do not use fully qualified names (FQN) in Kotlin/Gradle files. Use imports instead.
+
 ## Git Conventions
 
 This project uses [Conventional Commits](https://www.conventionalcommits.org/). Commit messages should follow this format:
@@ -78,3 +82,15 @@ Common types:
 - `test`: Adding or updating tests (hidden)
 - `build`: Build system changes (hidden)
 - `ci`: CI/CD changes (hidden)
+
+## MANDATORY: Pre-Commit Checklist
+
+**IMPORTANT**: Before ANY code changes are considered complete, you MUST ALWAYS run these commands
+IN THIS ORDER:
+
+1. **Run Build**: `./gradlew build` - Not only the target module, but the whole repository build MUST succeed
+5. **Verify No FQNs**: Check that no fully qualified names are used in code
+
+If ANY of these fail, fix the issues before proceeding. NO EXCEPTIONS.
+
+This is a MANDATORY requirement for EVERY code change, no matter how small.
