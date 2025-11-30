@@ -10,18 +10,18 @@ class LogWriter(
     fun log(log: LogEntity) {
         dbOpenHelper.executeTransaction { db ->
             // insert provided log
-            db.compileStatement(LogTable.INSERT).apply {
-                bindString(1, log.priority)
-                bindString(2, log.tag)
-                bindString(3, log.message)
-                bindLong(4, log.timestamp)
-                execute()
+            db.compileStatement(LogTable.INSERT).use { stmt ->
+                stmt.bindString(1, log.priority)
+                stmt.bindString(2, log.tag)
+                stmt.bindString(3, log.message)
+                stmt.bindLong(4, log.timestamp)
+                stmt.execute()
             }
 
             // delete if row count exceeds provided size
-            db.compileStatement(LogTable.DELETE_OLDER).apply {
-                bindLong(1, size.toLong())
-                execute()
+            db.compileStatement(LogTable.DELETE_OLDER).use { stmt ->
+                stmt.bindLong(1, size.toLong())
+                stmt.execute()
             }
         }
     }

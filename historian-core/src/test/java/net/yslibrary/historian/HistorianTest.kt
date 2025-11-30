@@ -110,6 +110,7 @@ class HistorianTest {
         val nThreads = 10
         historian.initialize()
 
+        val threads = mutableListOf<Thread>()
         for (i in 0 until nThreads) {
             val writer = Runnable {
                 try {
@@ -121,10 +122,14 @@ class HistorianTest {
             }
 
             val thread = Thread(writer)
-            thread.run()
+            threads.add(thread)
+            thread.start()
         }
 
-        Thread.sleep(1000)
+        // Wait for all threads to complete
+        threads.forEach { it.join() }
+
+        Thread.sleep(500)
 
         val cursor = getAllLogs(historian)
         assertEquals(10, cursor.count)
