@@ -21,3 +21,5 @@ jacoco.exec
 
 .envrc
 *-sec.asc
+
+.temp/
