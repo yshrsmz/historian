@@ -8,9 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.6.0](https://github.com/yshrsmz/historian/compare/historian-v0.5.0...historian-v0.6.0) (2025-11-30)
 
 
+### ⚠ BREAKING CHANGES
+
+* Library migrated from Java to Kotlin
+* `Historian.Builder` is now deprecated in favor of Kotlin DSL
+* `Historian.Callbacks` interface split into `OnSuccessCallback` and `OnFailureCallback`
+* `terminate()` is deprecated in favor of `terminateSafe()`
+
 ### Features
 
 * Migrate library from Java to Kotlin ([#31](https://github.com/yshrsmz/historian/issues/31)) ([f66eb77](https://github.com/yshrsmz/historian/commit/f66eb773d77ccb8fc56a5cd65799f457176e731d))
+* Add Kotlin DSL for `Historian` configuration
+* Add `Historian.toTree()` extension function for Kotlin users
+* Add `terminateSafe()` method for graceful shutdown with configurable timeout
+* Split callbacks into separate `OnSuccessCallback` and `OnFailureCallback` functional interfaces
 
 
 ### Bug Fixes

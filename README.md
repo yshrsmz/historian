@@ -18,8 +18,8 @@ Historian is distributed via Maven Central. [![Maven Central](https://maven-badg
 
 ```kotlin
 dependencies {
-  implementation("net.yslibrary.historian:historian-core:0.5.0")
-  implementation("net.yslibrary.historian:historian-tree:0.5.0")
+  implementation("net.yslibrary.historian:historian-core:0.6.0")
+  implementation("net.yslibrary.historian:historian-tree:0.6.0")
   implementation("com.jakewharton.timber:timber:5.0.1")
 }
 ```
@@ -29,8 +29,8 @@ dependencies {
 
 ```gradle
 dependencies {
-  implementation 'net.yslibrary.historian:historian-core:0.5.0'
-  implementation 'net.yslibrary.historian:historian-tree:0.5.0'
+  implementation 'net.yslibrary.historian:historian-core:0.6.0'
+  implementation 'net.yslibrary.historian:historian-tree:0.6.0'
   implementation 'com.jakewharton.timber:timber:5.0.1'
 }
 ```
@@ -38,19 +38,69 @@ dependencies {
 
 ## Usage
 
+### Kotlin
+
+```kotlin
+class App : Application() {
+
+    lateinit var historian: Historian
+
+    override fun onCreate() {
+        super.onCreate()
+
+        historian = Historian(this) {
+            // db name. defaults to "log.db"
+            name = "log.db"
+            // a directory where the db file will be saved. defaults to `context.filesDir`.
+            // The directory will be created if it does not exist.
+            directory = File(getExternalFilesDir(null), "logs")
+            // max number of logs stored in db. defaults to 500
+            size = 500
+            // log level to save. defaults to Log.INFO
+            logLevel = Log.INFO
+            // enable debug logs
+            debug = true
+            // optional callbacks
+            onSuccess = Historian.OnSuccessCallback { /* log saved */ }
+            onFailure = Historian.OnFailureCallback { throwable -> /* handle error */ }
+        }
+
+        // initialize historian
+        historian.initialize()
+
+        // plant as Timber tree - using extension function
+        Timber.plant(historian.toTree())
+
+        // delete all saved logs
+        historian.delete()
+
+        // get database path
+        historian.dbPath()
+
+        // graceful shutdown (call from background thread)
+        // historian.terminateSafe()
+    }
+}
+```
+
+<details>
+<summary>Java</summary>
+
 ```java
-class App extends Application {
+public class App extends Application {
 
     Historian historian;
 
     @Override
     public void onCreate() {
-        historian = Historian.builder(context)
+        super.onCreate();
+
+        historian = Historian.builder(this)
             // db name. defaults to "log.db"
             .name("log.db")
-            // a directory where the db file will be saved. defaults to `context.getFiles()`.
+            // a directory where the db file will be saved. defaults to `context.getFilesDir()`.
             // The directory will be created if it does not exist.
-            .directory(new File(Environment.getExternalStorageDirectory(), "somedir"))
+            .directory(new File(getExternalFilesDir(null), "logs"))
             // max number of logs stored in db. defaults to 500
             .size(500)
             // log level to save
@@ -66,11 +116,12 @@ class App extends Application {
         // delete all saved logs
         historian.delete();
 
-        // provide db path in Uri
+        // provide db path
         historian.dbPath();
     }
 }
 ```
+</details>
 
 ## Table definition
 
