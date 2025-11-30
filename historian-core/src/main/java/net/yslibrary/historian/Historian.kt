@@ -134,7 +134,7 @@ class Historian private constructor(
      * DSL Builder for Kotlin
      */
     @HistorianDsl
-    class Builder internal constructor(private val context: Context) {
+    class DslBuilder internal constructor(private val context: Context) {
         var directory: File = context.filesDir
         var name: String = DB_NAME
         var size: Int = SIZE
@@ -182,10 +182,10 @@ class Historian private constructor(
     }
 
     /**
-     * Fluent Builder for Java compatibility
+     * Fluent Builder (Java-compatible)
      */
-    class JavaBuilder internal constructor(private val context: Context) {
-        private val builder = Builder(context)
+    class Builder internal constructor(private val context: Context) {
+        private val dslBuilder = DslBuilder(context)
 
         /**
          * Specify a directory where Historian's Database file is stored.
@@ -194,7 +194,7 @@ class Historian private constructor(
          * @return Builder
          */
         @CheckResult
-        fun directory(directory: File): JavaBuilder = apply { builder.directory = directory }
+        fun directory(directory: File): Builder = apply { dslBuilder.directory = directory }
 
         /**
          * Specify a name of the Historian's Database file
@@ -205,7 +205,7 @@ class Historian private constructor(
          * @return Builder
          */
         @CheckResult
-        fun name(name: String): JavaBuilder = apply { builder.name = name }
+        fun name(name: String): Builder = apply { dslBuilder.name = name }
 
         /**
          * Specify the max row number of the SQLite database
@@ -216,7 +216,7 @@ class Historian private constructor(
          * @return Builder
          */
         @CheckResult
-        fun size(size: Int): JavaBuilder = apply { builder.size = size }
+        fun size(size: Int): Builder = apply { dslBuilder.size = size }
 
         /**
          * Specify minimum log level to save. The value should be any one of
@@ -233,7 +233,7 @@ class Historian private constructor(
          * @return Builder
          */
         @CheckResult
-        fun logLevel(logLevel: Int): JavaBuilder = apply { builder.logLevel = logLevel }
+        fun logLevel(logLevel: Int): Builder = apply { dslBuilder.logLevel = logLevel }
 
         /**
          * Enable/disable Historian's debug logs(not saved to SQLite).
@@ -244,7 +244,7 @@ class Historian private constructor(
          * @return Builder
          */
         @CheckResult
-        fun debug(debug: Boolean): JavaBuilder = apply { builder.debug = debug }
+        fun debug(debug: Boolean): Builder = apply { dslBuilder.debug = debug }
 
         /**
          * Specify callbacks. This callbacks are called each time Historian save a log.
@@ -256,7 +256,7 @@ class Historian private constructor(
          * @return Builder
          */
         @CheckResult
-        fun callbacks(callbacks: Callbacks): JavaBuilder = apply { builder.callbacks = callbacks }
+        fun callbacks(callbacks: Callbacks): Builder = apply { dslBuilder.callbacks = callbacks }
 
         /**
          * Build Historian. You need to call this method to use [Historian]
@@ -264,7 +264,7 @@ class Historian private constructor(
          * @return [Historian]
          */
         @CheckResult
-        fun build(): Historian = builder.build()
+        fun build(): Historian = dslBuilder.build()
     }
 
     internal class DefaultCallbacks(private val debug: Boolean) : Callbacks {
@@ -291,18 +291,18 @@ class Historian private constructor(
         /**
          * Kotlin DSL entry point
          */
-        operator fun invoke(context: Context, block: Builder.() -> Unit = {}): Historian =
-            Builder(context).apply(block).build()
+        operator fun invoke(context: Context, block: DslBuilder.() -> Unit = {}): Historian =
+            DslBuilder(context).apply(block).build()
 
         /**
-         * Get Builder (Java entry point)
+         * Get Builder
          *
          * @param context Context
-         * @return [JavaBuilder]
+         * @return [Builder]
          */
         @JvmStatic
         @CheckResult
-        fun builder(context: Context): JavaBuilder = JavaBuilder(context)
+        fun builder(context: Context): Builder = Builder(context)
     }
 }
 
