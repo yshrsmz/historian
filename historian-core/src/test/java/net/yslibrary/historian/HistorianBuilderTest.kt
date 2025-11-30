@@ -21,6 +21,7 @@ class HistorianBuilderTest {
         context = ApplicationProvider.getApplicationContext()
     }
 
+    @Suppress("DEPRECATION")
     @Test
     fun `build with defaults`() {
         val historian = Historian.builder(context).build()
@@ -34,6 +35,7 @@ class HistorianBuilderTest {
         assertFalse(historian.debug)
     }
 
+    @Suppress("DEPRECATION")
     @Test
     fun `build with custom params`() {
         val historian = Historian.builder(context)

@@ -31,12 +31,14 @@ class HistorianTest {
         context = ApplicationProvider.getApplicationContext()
     }
 
+    @Suppress("DEPRECATION")
     @Test(expected = IllegalStateException::class)
     fun `initialize not called`() {
         val historian = Historian.builder(context).build()
         historian.log(Log.DEBUG, TAG, "this is debug1")
     }
 
+    @Suppress("DEPRECATION")
     @Test
     fun `log queue under logLevel`() {
         val historian = Historian.builder(context).build()
