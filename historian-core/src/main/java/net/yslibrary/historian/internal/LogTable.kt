@@ -7,7 +7,13 @@ object LogTable {
     const val NAME = "log"
 
     val CREATE_TABLE = """
-        CREATE TABLE $NAME (id INTEGER PRIMARY KEY AUTOINCREMENT,priority TEXT NOT NULL, tag TEXT NOT NULL, message TEXT NOT NULL, created_at INTEGER NOT NULL);
+        CREATE TABLE $NAME (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            priority TEXT NOT NULL,
+            tag TEXT NOT NULL,
+            message TEXT NOT NULL,
+            created_at INTEGER NOT NULL
+        );
     """.trimIndent()
 
     val DROP_TABLE = "DROP TABLE $NAME;"
