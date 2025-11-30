@@ -69,7 +69,8 @@ class Historian private constructor(
      * @see terminateSafe for graceful shutdown that waits for pending writes
      */
     @Deprecated(
-        message = "Use terminateSafe() for graceful shutdown that waits for pending writes",
+        message = "Use terminateSafe() for graceful shutdown that waits for pending writes. " +
+            "Note: terminateSafe() is a blocking call - do not call from the main thread to avoid ANRs.",
         replaceWith = ReplaceWith("terminateSafe()")
     )
     fun terminate() {
