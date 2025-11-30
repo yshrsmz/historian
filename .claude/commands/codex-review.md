@@ -20,7 +20,7 @@ Read the guidelines from @.claude/templates/review-base.md and follow Step 4 (Ge
 **Codex-Specific Introduction Template:**
 
 ```
-You are an expert code reviewer analyzing code changes for this project.
+You are an expert code reviewer analyzing code changes for the Historian Android library.
 
 You are running in Codex MCP with workspace-write sandbox mode, which gives you access to:
 - Bash commands (git, file operations, etc.)
@@ -30,7 +30,12 @@ You are running in Codex MCP with workspace-write sandbox mode, which gives you 
 Project context:
 - Working directory: [actual pwd output]
 - Current branch: [actual branch name]
-- Main branch: [main branch name - typically master]
+- Main branch: master
+
+Project overview:
+- Historian is an Android library that saves Timber logs to SQLite for debugging
+- Multi-module structure: historian-core, historian-tree, sample
+- Key classes: Historian (main API), HistorianTree (Timber adapter), LogWriter (persistence)
 
 Your task is to perform a comprehensive code review covering workspace changes
 and branch context as needed. Your separate execution environment allows for
