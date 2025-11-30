@@ -95,7 +95,7 @@ public class HistorianTest {
   }
 
   @Test
-  @Config(sdk = {21, 23, 24, 28, 33})
+  @Config(sdk = {23, 28, 33, 35})
   public void log_background() throws ExecutionException, InterruptedException {
     historian.initialize();
 
