@@ -57,6 +57,7 @@ class Historian private constructor(
     /**
      * Terminate Historian
      * This method will perform;
+     * - shutdown the background executor
      * - close underlying [DbOpenHelper]
      *
      * After calling this method, all calls to this instance of [Historian]
@@ -64,6 +65,7 @@ class Historian private constructor(
      */
     fun terminate() {
         checkInitialized()
+        executorService.shutdown()
         dbOpenHelper.close()
     }
 
@@ -112,11 +114,20 @@ class Historian private constructor(
     }
 
     /**
-     * Callbacks interface for log writing operations
+     * Callbacks interface for log writing operations.
+     * Both methods are called on a background thread.
      */
-    fun interface Callbacks {
+    interface Callbacks {
+        /**
+         * Called when a log is successfully written to the database.
+         */
         fun onSuccess()
-        fun onFailure(throwable: Throwable) {}
+
+        /**
+         * Called when writing a log fails.
+         * @param throwable the exception that caused the failure
+         */
+        fun onFailure(throwable: Throwable)
     }
 
     /**
@@ -133,7 +144,7 @@ class Historian private constructor(
             }
         var logLevel: Int = LOG_LEVEL
         var debug: Boolean = false
-        var callbacks: Callbacks = DefaultCallbacks()
+        var callbacks: Callbacks? = null
 
         @CheckResult
         fun build(): Historian {
@@ -162,7 +173,7 @@ class Historian private constructor(
                 size = size,
                 logLevel = logLevel,
                 debug = debug,
-                callbacks = callbacks,
+                callbacks = callbacks ?: DefaultCallbacks(debug),
                 dbOpenHelper = dbOpenHelper,
                 logWriter = LogWriter(dbOpenHelper, size),
                 executorService = Executors.newSingleThreadExecutor()
@@ -256,13 +267,15 @@ class Historian private constructor(
         fun build(): Historian = builder.build()
     }
 
-    internal class DefaultCallbacks : Callbacks {
+    internal class DefaultCallbacks(private val debug: Boolean) : Callbacks {
         override fun onSuccess() {
             // no-op
         }
 
         override fun onFailure(throwable: Throwable) {
-            // no-op by default
+            if (debug) {
+                Log.e(TAG, "Failed to write log", throwable)
+            }
         }
     }
 
