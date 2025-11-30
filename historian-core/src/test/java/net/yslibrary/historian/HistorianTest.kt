@@ -35,7 +35,11 @@ class HistorianTest {
     @Test(expected = IllegalStateException::class)
     fun `initialize not called`() {
         val historian = Historian.builder(context).build()
-        historian.log(Log.DEBUG, TAG, "this is debug1")
+        try {
+            historian.log(Log.DEBUG, TAG, "this is debug1")
+        } finally {
+            historian.terminate()
+        }
     }
 
     @Suppress("DEPRECATION")
@@ -44,12 +48,17 @@ class HistorianTest {
         val historian = Historian.builder(context).build()
         historian.initialize()
 
-        historian.log(Log.VERBOSE, TAG, "this is verbose")
-        historian.log(Log.DEBUG, TAG, "this is debug1")
-        historian.log(Log.DEBUG, TAG, "this is debug2")
+        try {
+            historian.log(Log.VERBOSE, TAG, "this is verbose")
+            historian.log(Log.DEBUG, TAG, "this is debug1")
+            historian.log(Log.DEBUG, TAG, "this is debug2")
 
-        val result = getAllLogs(historian)
-        assertEquals(0, result.count)
+            getAllLogs(historian).use { cursor ->
+                assertEquals(0, cursor.count)
+            }
+        } finally {
+            historian.terminate()
+        }
     }
 
     @Test
@@ -62,39 +71,41 @@ class HistorianTest {
         }
         historian.initialize()
 
-        historian.log(Log.INFO, TAG, "this is info1")
-        historian.log(Log.DEBUG, TAG, "this is debug1")  // Below logLevel, not counted
-        historian.log(Log.INFO, TAG, "this is info2")
-        historian.log(Log.WARN, TAG, "this is warn1")
-        historian.log(Log.ERROR, TAG, "this is error1")
+        try {
+            historian.log(Log.INFO, TAG, "this is info1")
+            historian.log(Log.DEBUG, TAG, "this is debug1")  // Below logLevel, not counted
+            historian.log(Log.INFO, TAG, "this is info2")
+            historian.log(Log.WARN, TAG, "this is warn1")
+            historian.log(Log.ERROR, TAG, "this is error1")
 
-        assertTrue("Timed out waiting for logs", latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS))
+            assertTrue("Timed out waiting for logs", latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS))
 
-        val cursor = getAllLogs(historian)
+            getAllLogs(historian).use { cursor ->
+                assertEquals(4, cursor.count)
 
-        assertEquals(4, cursor.count)
+                cursor.moveToFirst()
+                assertEquals("INFO", Cursors.getString(cursor, "priority"))
+                assertEquals(TAG, Cursors.getString(cursor, "tag"))
+                assertEquals("this is info1", Cursors.getString(cursor, "message"))
 
-        cursor.moveToFirst()
-        assertEquals("INFO", Cursors.getString(cursor, "priority"))
-        assertEquals(TAG, Cursors.getString(cursor, "tag"))
-        assertEquals("this is info1", Cursors.getString(cursor, "message"))
+                cursor.moveToNext()
+                assertEquals("INFO", Cursors.getString(cursor, "priority"))
+                assertEquals(TAG, Cursors.getString(cursor, "tag"))
+                assertEquals("this is info2", Cursors.getString(cursor, "message"))
 
-        cursor.moveToNext()
-        assertEquals("INFO", Cursors.getString(cursor, "priority"))
-        assertEquals(TAG, Cursors.getString(cursor, "tag"))
-        assertEquals("this is info2", Cursors.getString(cursor, "message"))
+                cursor.moveToNext()
+                assertEquals("WARN", Cursors.getString(cursor, "priority"))
+                assertEquals(TAG, Cursors.getString(cursor, "tag"))
+                assertEquals("this is warn1", Cursors.getString(cursor, "message"))
 
-        cursor.moveToNext()
-        assertEquals("WARN", Cursors.getString(cursor, "priority"))
-        assertEquals(TAG, Cursors.getString(cursor, "tag"))
-        assertEquals("this is warn1", Cursors.getString(cursor, "message"))
-
-        cursor.moveToNext()
-        assertEquals("ERROR", Cursors.getString(cursor, "priority"))
-        assertEquals(TAG, Cursors.getString(cursor, "tag"))
-        assertEquals("this is error1", Cursors.getString(cursor, "message"))
-
-        cursor.close()
+                cursor.moveToNext()
+                assertEquals("ERROR", Cursors.getString(cursor, "priority"))
+                assertEquals(TAG, Cursors.getString(cursor, "tag"))
+                assertEquals("this is error1", Cursors.getString(cursor, "message"))
+            }
+        } finally {
+            historian.terminate()
+        }
     }
 
     @Test
@@ -108,18 +119,23 @@ class HistorianTest {
         }
         historian.initialize()
 
-        val es = Executors.newSingleThreadExecutor()
-        val future = es.submit {
-            for (i in 0 until expectedLogs) {
-                historian.log(Log.INFO, TAG, "this log is from background thread - $i")
+        try {
+            val es = Executors.newSingleThreadExecutor()
+            val future = es.submit {
+                for (i in 0 until expectedLogs) {
+                    historian.log(Log.INFO, TAG, "this log is from background thread - $i")
+                }
             }
+
+            future.get()
+            assertTrue("Timed out waiting for logs", latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS))
+
+            getAllLogs(historian).use { cursor ->
+                assertEquals(expectedLogs, cursor.count)
+            }
+        } finally {
+            historian.terminate()
         }
-
-        future.get()
-        assertTrue("Timed out waiting for logs", latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS))
-
-        val cursor = getAllLogs(historian)
-        assertEquals(expectedLogs, cursor.count)
     }
 
     @Test
@@ -132,24 +148,29 @@ class HistorianTest {
         }
         historian.initialize()
 
-        val threads = List(nThreads) {
-            Thread {
-                try {
-                    Thread.sleep(Random.nextLong(0, 200))
-                } catch (e: InterruptedException) {
-                    e.printStackTrace()
-                }
-                historian.log(Log.INFO, TAG, "this is test: ${System.currentTimeMillis()}")
-            }.apply { start() }
+        try {
+            val threads = List(nThreads) {
+                Thread {
+                    try {
+                        Thread.sleep(Random.nextLong(0, 200))
+                    } catch (e: InterruptedException) {
+                        e.printStackTrace()
+                    }
+                    historian.log(Log.INFO, TAG, "this is test: ${System.currentTimeMillis()}")
+                }.apply { start() }
+            }
+
+            // Wait for all threads to complete
+            threads.forEach { it.join() }
+
+            assertTrue("Timed out waiting for logs", latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS))
+
+            getAllLogs(historian).use { cursor ->
+                assertEquals(nThreads, cursor.count)
+            }
+        } finally {
+            historian.terminate()
         }
-
-        // Wait for all threads to complete
-        threads.forEach { it.join() }
-
-        assertTrue("Timed out waiting for logs", latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS))
-
-        val cursor = getAllLogs(historian)
-        assertEquals(nThreads, cursor.count)
     }
 
     @Test
@@ -161,14 +182,18 @@ class HistorianTest {
         }
         historian.initialize()
 
-        historian.log(Log.INFO, null, "this tag should be null")
+        try {
+            historian.log(Log.INFO, null, "this tag should be null")
 
-        assertTrue("Timed out waiting for log", latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS))
+            assertTrue("Timed out waiting for log", latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS))
 
-        val cursor = getAllLogs(historian)
-
-        cursor.moveToFirst()
-        assertEquals("", Cursors.getString(cursor, "tag"))
+            getAllLogs(historian).use { cursor ->
+                cursor.moveToFirst()
+                assertEquals("", Cursors.getString(cursor, "tag"))
+            }
+        } finally {
+            historian.terminate()
+        }
     }
 
     @Test
@@ -185,12 +210,16 @@ class HistorianTest {
         }
         historian.initialize()
 
-        repeat(expectedLogs) { i ->
-            historian.log(Log.INFO, TAG, "message $i")
-        }
+        try {
+            repeat(expectedLogs) { i ->
+                historian.log(Log.INFO, TAG, "message $i")
+            }
 
-        assertTrue("Timed out waiting for callbacks", latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS))
-        assertEquals(expectedLogs, successCount.get())
+            assertTrue("Timed out waiting for callbacks", latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS))
+            assertEquals(expectedLogs, successCount.get())
+        } finally {
+            historian.terminate()
+        }
     }
 
     @Test
@@ -211,14 +240,18 @@ class HistorianTest {
         }
         historian.initialize()
 
-        // Log 3 successful messages
-        repeat(3) { i ->
-            historian.log(Log.INFO, TAG, "message $i")
-        }
+        try {
+            // Log 3 successful messages
+            repeat(3) { i ->
+                historian.log(Log.INFO, TAG, "message $i")
+            }
 
-        assertTrue("Timed out waiting for callbacks", latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS))
-        assertEquals(3, successCount.get())
-        assertEquals(0, failureCount.get())
+            assertTrue("Timed out waiting for callbacks", latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS))
+            assertEquals(3, successCount.get())
+            assertEquals(0, failureCount.get())
+        } finally {
+            historian.terminate()
+        }
     }
 
     private fun getAllLogs(historian: Historian): Cursor {
