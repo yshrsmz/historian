@@ -11,7 +11,7 @@ task clean(type: Delete) {
 }
 
 wrapper {
-  gradleVersion = '8.14.3'
+  gradleVersion = '9.2.1'
   //noinspection UnnecessaryQualifiedReference
   distributionType = Wrapper.DistributionType.ALL
 }
