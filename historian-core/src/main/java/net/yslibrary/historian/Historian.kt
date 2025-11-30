@@ -17,15 +17,15 @@ import java.util.concurrent.Executors
  * Historian
  */
 class Historian private constructor(
-    @JvmField val context: Context,
-    @JvmField val directory: File,
-    @JvmField val dbName: String,
-    @JvmField val size: Int,
-    @JvmField val logLevel: Int,
-    @JvmField val debug: Boolean,
-    @JvmField val callbacks: Callbacks,
-    @JvmField internal val dbOpenHelper: DbOpenHelper,
-    @JvmField internal val logWriter: LogWriter,
+    val context: Context,
+    val directory: File,
+    val dbName: String,
+    val size: Int,
+    val logLevel: Int,
+    val debug: Boolean,
+    val callbacks: Callbacks,
+    internal val dbOpenHelper: DbOpenHelper,
+    internal val logWriter: LogWriter,
     private val executorService: ExecutorService
 ) {
     @Volatile
