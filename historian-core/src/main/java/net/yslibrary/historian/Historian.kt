@@ -104,6 +104,9 @@ class Historian private constructor(
         val completed = try {
             executorService.awaitTermination(timeoutSeconds, TimeUnit.SECONDS)
         } catch (e: InterruptedException) {
+            if (debug) {
+                Log.w(TAG, "terminateSafe() interrupted while waiting for pending writes", e)
+            }
             Thread.currentThread().interrupt()
             false
         }
