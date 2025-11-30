@@ -21,3 +21,6 @@ jacoco.exec
 
 .envrc
 *-sec.asc
+
+.temp/
+.gradle-home/
