@@ -40,7 +40,10 @@ dependencies {
 
 mavenPublishing {
   publishToMavenCentral()
-  signAllPublications()
+
+  if (project.hasProperty("signingInMemoryKey")) {
+    signAllPublications()
+  }
 
   coordinates(
     project.property("GROUP").toString(),
