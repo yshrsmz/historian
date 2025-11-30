@@ -54,3 +54,27 @@ Historian is an Android library that provides a custom Timber.Tree implementatio
 ## Configuration
 
 Version is managed in `gradle.properties` (`VERSION_NAME`). Dependencies are centralized in `gradle/libs.versions.toml` (Gradle Version Catalog).
+
+## Git Conventions
+
+This project uses [Conventional Commits](https://www.conventionalcommits.org/). Commit messages should follow this format:
+
+```
+<type>: <description>
+
+[optional body]
+```
+
+Common types:
+- `feat`: New feature (appears in changelog)
+- `fix`: Bug fix (appears in changelog)
+- `perf`: Performance improvements (appears in changelog)
+- `deps`: Dependency updates (appears in changelog)
+- `revert`: Reverts (appears in changelog)
+- `docs`: Documentation changes (appears in changelog)
+- `style`: Code style changes (hidden)
+- `chore`: Maintenance tasks (hidden)
+- `refactor`: Code refactoring (hidden)
+- `test`: Adding or updating tests (hidden)
+- `build`: Build system changes (hidden)
+- `ci`: CI/CD changes (hidden)
