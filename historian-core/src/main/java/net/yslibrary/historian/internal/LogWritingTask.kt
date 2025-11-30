@@ -6,7 +6,8 @@ import net.yslibrary.historian.Historian
  * Runnable implementation writing logs and executing callbacks
  */
 class LogWritingTask(
-    private val callbacks: Historian.Callbacks,
+    private val onSuccess: Historian.OnSuccessCallback?,
+    private val onFailure: Historian.OnFailureCallback?,
     private val logWriter: LogWriter,
     private val log: LogEntity
 ) : Runnable {
@@ -14,9 +15,9 @@ class LogWritingTask(
     override fun run() {
         try {
             logWriter.log(log)
-            callbacks.onSuccess()
+            onSuccess?.onSuccess()
         } catch (t: Throwable) {
-            callbacks.onFailure(t)
+            onFailure?.onFailure(t)
         }
     }
 }

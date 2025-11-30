@@ -4,35 +4,42 @@ import android.database.Cursor
 import android.util.Log
 import androidx.test.core.app.ApplicationProvider
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
+import kotlin.random.Random
 
 @RunWith(RobolectricTestRunner::class)
 class HistorianTest {
 
     companion object {
         const val TAG = "test_tag"
+        const val TIMEOUT_SECONDS = 5L
     }
 
-    private lateinit var historian: Historian
+    private lateinit var context: android.content.Context
 
     @Before
     fun setup() {
-        val context = ApplicationProvider.getApplicationContext<android.content.Context>()
-        historian = Historian.builder(context).build()
+        context = ApplicationProvider.getApplicationContext()
     }
 
     @Test(expected = IllegalStateException::class)
     fun `initialize not called`() {
+        val historian = Historian.builder(context).build()
         historian.log(Log.DEBUG, TAG, "this is debug1")
     }
 
     @Test
     fun `log queue under logLevel`() {
+        val historian = Historian.builder(context).build()
         historian.initialize()
 
         historian.log(Log.VERBOSE, TAG, "this is verbose")
@@ -44,17 +51,22 @@ class HistorianTest {
     }
 
     @Test
-    @Throws(InterruptedException::class)
     fun `log queue over logLevel`() {
+        val expectedLogs = 4
+        val latch = CountDownLatch(expectedLogs)
+
+        val historian = Historian(context) {
+            onSuccess = Historian.OnSuccessCallback { latch.countDown() }
+        }
         historian.initialize()
 
         historian.log(Log.INFO, TAG, "this is info1")
-        historian.log(Log.DEBUG, TAG, "this is debug1")
+        historian.log(Log.DEBUG, TAG, "this is debug1")  // Below logLevel, not counted
         historian.log(Log.INFO, TAG, "this is info2")
         historian.log(Log.WARN, TAG, "this is warn1")
         historian.log(Log.ERROR, TAG, "this is error1")
 
-        Thread.sleep(500)
+        assertTrue("Timed out waiting for logs", latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS))
 
         val cursor = getAllLogs(historian)
 
@@ -85,69 +97,126 @@ class HistorianTest {
 
     @Test
     @Config(sdk = [23, 28, 33, 35])
-    @Throws(Exception::class)
     fun `log background`() {
+        val expectedLogs = 10
+        val latch = CountDownLatch(expectedLogs)
+
+        val historian = Historian(context) {
+            onSuccess = Historian.OnSuccessCallback { latch.countDown() }
+        }
         historian.initialize()
 
         val es = Executors.newSingleThreadExecutor()
         val future = es.submit {
-            for (i in 0 until 10) {
+            for (i in 0 until expectedLogs) {
                 historian.log(Log.INFO, TAG, "this log is from background thread - $i")
             }
         }
 
         future.get()
-
-        Thread.sleep(200)
+        assertTrue("Timed out waiting for logs", latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS))
 
         val cursor = getAllLogs(historian)
-        assertEquals(10, cursor.count)
+        assertEquals(expectedLogs, cursor.count)
     }
 
     @Test
-    @Throws(InterruptedException::class)
     fun `multiple write in multiple threads`() {
         val nThreads = 10
+        val latch = CountDownLatch(nThreads)
+
+        val historian = Historian(context) {
+            onSuccess = Historian.OnSuccessCallback { latch.countDown() }
+        }
         historian.initialize()
 
-        val threads = mutableListOf<Thread>()
-        for (i in 0 until nThreads) {
-            val writer = Runnable {
+        val threads = List(nThreads) {
+            Thread {
                 try {
-                    Thread.sleep((Math.random() * 200.0).toLong())
+                    Thread.sleep(Random.nextLong(0, 200))
                 } catch (e: InterruptedException) {
                     e.printStackTrace()
                 }
                 historian.log(Log.INFO, TAG, "this is test: ${System.currentTimeMillis()}")
-            }
-
-            val thread = Thread(writer)
-            threads.add(thread)
-            thread.start()
+            }.apply { start() }
         }
 
         // Wait for all threads to complete
         threads.forEach { it.join() }
 
-        Thread.sleep(500)
+        assertTrue("Timed out waiting for logs", latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS))
 
         val cursor = getAllLogs(historian)
-        assertEquals(10, cursor.count)
+        assertEquals(nThreads, cursor.count)
     }
 
     @Test
-    @Throws(InterruptedException::class)
     fun `null tag`() {
+        val latch = CountDownLatch(1)
+
+        val historian = Historian(context) {
+            onSuccess = Historian.OnSuccessCallback { latch.countDown() }
+        }
         historian.initialize()
 
         historian.log(Log.INFO, null, "this tag should be null")
 
-        Thread.sleep(1000)
+        assertTrue("Timed out waiting for log", latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS))
 
         val cursor = getAllLogs(historian)
 
         cursor.moveToFirst()
         assertEquals("", Cursors.getString(cursor, "tag"))
+    }
+
+    @Test
+    fun `onSuccess callback is invoked for each successful write`() {
+        val successCount = AtomicInteger(0)
+        val expectedLogs = 5
+        val latch = CountDownLatch(expectedLogs)
+
+        val historian = Historian(context) {
+            onSuccess = Historian.OnSuccessCallback {
+                successCount.incrementAndGet()
+                latch.countDown()
+            }
+        }
+        historian.initialize()
+
+        repeat(expectedLogs) { i ->
+            historian.log(Log.INFO, TAG, "message $i")
+        }
+
+        assertTrue("Timed out waiting for callbacks", latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS))
+        assertEquals(expectedLogs, successCount.get())
+    }
+
+    @Test
+    fun `separate onSuccess and onFailure callbacks work independently`() {
+        val successCount = AtomicInteger(0)
+        val failureCount = AtomicInteger(0)
+        val latch = CountDownLatch(3)
+
+        val historian = Historian(context) {
+            onSuccess = Historian.OnSuccessCallback {
+                successCount.incrementAndGet()
+                latch.countDown()
+            }
+            onFailure = Historian.OnFailureCallback {
+                failureCount.incrementAndGet()
+                latch.countDown()
+            }
+        }
+        historian.initialize()
+
+        // Log 3 successful messages
+        repeat(3) { i ->
+            historian.log(Log.INFO, TAG, "message $i")
+        }
+
+        assertTrue("Timed out waiting for callbacks", latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS))
+        assertEquals(3, successCount.get())
+        assertEquals(0, failureCount.get())
     }
 
     private fun getAllLogs(historian: Historian): Cursor {

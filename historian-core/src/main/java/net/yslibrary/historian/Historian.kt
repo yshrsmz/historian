@@ -24,7 +24,8 @@ class Historian private constructor(
     val size: Int,
     val logLevel: Int,
     val debug: Boolean,
-    val callbacks: Callbacks,
+    private val onSuccess: OnSuccessCallback?,
+    private val onFailure: OnFailureCallback?,
     internal val dbOpenHelper: DbOpenHelper,
     internal val logWriter: LogWriter,
     private val executorService: ExecutorService
@@ -48,7 +49,8 @@ class Historian private constructor(
 
         executorService.execute(
             LogWritingTask(
-                callbacks,
+                onSuccess,
+                onFailure,
                 logWriter,
                 LogEntity.create(priority, tag, message, System.currentTimeMillis())
             )
@@ -83,7 +85,9 @@ class Historian private constructor(
      * can produce exception or undefined behavior.
      *
      * Note: This method blocks the calling thread. Call from a background thread
-     * if blocking is not acceptable.
+     * if blocking is not acceptable. If timeout is reached before pending writes
+     * complete, the executor is NOT force-terminated (no shutdownNow()), but the
+     * database will be closed, which may cause errors for any remaining writes.
      *
      * @param timeoutSeconds maximum time to wait for pending writes (default: 5 seconds)
      * @return true if all pending writes completed, false if timeout elapsed
@@ -147,21 +151,36 @@ class Historian private constructor(
     }
 
     /**
-     * Callbacks interface for log writing operations.
-     * Both methods are called on a background thread.
+     * Callback for log write success.
+     * Called on a background thread.
      */
-    interface Callbacks {
+    fun interface OnSuccessCallback {
         /**
          * Called when a log is successfully written to the database.
          */
         fun onSuccess()
+    }
 
+    /**
+     * Callback for log write failure.
+     * Called on a background thread.
+     */
+    fun interface OnFailureCallback {
         /**
          * Called when writing a log fails.
          * @param throwable the exception that caused the failure
          */
         fun onFailure(throwable: Throwable)
     }
+
+    /**
+     * Combined callbacks interface for log writing operations.
+     * Both methods are called on a background thread.
+     *
+     * Consider using [OnSuccessCallback] and [OnFailureCallback] separately
+     * if you only need one of the callbacks.
+     */
+    interface Callbacks : OnSuccessCallback, OnFailureCallback
 
     /**
      * DSL Builder for Kotlin
@@ -177,10 +196,22 @@ class Historian private constructor(
             }
         var logLevel: Int = LOG_LEVEL
         var debug: Boolean = false
-        var callbacks: Callbacks? = null
+
+        /**
+         * Callback invoked when a log is successfully written to the database.
+         * Called on a background thread. Optional - defaults to null (no callback).
+         */
+        var onSuccess: OnSuccessCallback? = null
+
+        /**
+         * Callback invoked when a log write fails.
+         * Called on a background thread. Optional - if null and [debug] is true,
+         * errors will be logged via [android.util.Log.e].
+         */
+        var onFailure: OnFailureCallback? = null
 
         @CheckResult
-        fun build(): Historian {
+        internal fun build(): Historian {
             directory.mkdirs()
 
             val dbPath = try {
@@ -199,6 +230,15 @@ class Historian private constructor(
                 Log.d(TAG, "backing database file will be created at: ${dbOpenHelper.databaseName}")
             }
 
+            // Wrap onFailure to add debug logging if no failure callback provided
+            val effectiveOnFailure = onFailure ?: if (debug) {
+                OnFailureCallback { throwable ->
+                    Log.e(TAG, "Failed to write log", throwable)
+                }
+            } else {
+                null
+            }
+
             return Historian(
                 context = appContext,
                 directory = directory,
@@ -206,7 +246,8 @@ class Historian private constructor(
                 size = size,
                 logLevel = logLevel,
                 debug = debug,
-                callbacks = callbacks ?: DefaultCallbacks(debug),
+                onSuccess = onSuccess,
+                onFailure = effectiveOnFailure,
                 dbOpenHelper = dbOpenHelper,
                 logWriter = LogWriter(dbOpenHelper, size),
                 executorService = Executors.newSingleThreadExecutor()
@@ -225,9 +266,13 @@ class Historian private constructor(
          *
          * @param directory directory to save SQLite database file.
          * @return Builder
+         * @throws IllegalArgumentException if directory is null
          */
         @CheckResult
-        fun directory(directory: File): Builder = apply { dslBuilder.directory = directory }
+        fun directory(directory: File?): Builder = apply {
+            requireNotNull(directory) { "directory must not be null" }
+            dslBuilder.directory = directory
+        }
 
         /**
          * Specify a name of the Historian's Database file
@@ -236,9 +281,13 @@ class Historian private constructor(
          *
          * @param name file name of the backing SQLite database file
          * @return Builder
+         * @throws IllegalArgumentException if name is null
          */
         @CheckResult
-        fun name(name: String): Builder = apply { dslBuilder.name = name }
+        fun name(name: String?): Builder = apply {
+            requireNotNull(name) { "name must not be null" }
+            dslBuilder.name = name
+        }
 
         /**
          * Specify the max row number of the SQLite database
@@ -283,13 +332,16 @@ class Historian private constructor(
          * Specify callbacks. This callbacks are called each time Historian save a log.
          * This callbacks are called on background thread.
          *
-         * Default is [Historian.DefaultCallbacks]
-         *
          * @param callbacks callbacks to execute.
          * @return Builder
+         * @throws IllegalArgumentException if callbacks is null
          */
         @CheckResult
-        fun callbacks(callbacks: Callbacks): Builder = apply { dslBuilder.callbacks = callbacks }
+        fun callbacks(callbacks: Callbacks?): Builder = apply {
+            requireNotNull(callbacks) { "callbacks must not be null" }
+            dslBuilder.onSuccess = callbacks
+            dslBuilder.onFailure = callbacks
+        }
 
         /**
          * Build Historian. You need to call this method to use [Historian]
@@ -298,18 +350,6 @@ class Historian private constructor(
          */
         @CheckResult
         fun build(): Historian = dslBuilder.build()
-    }
-
-    internal class DefaultCallbacks(private val debug: Boolean) : Callbacks {
-        override fun onSuccess() {
-            // no-op
-        }
-
-        override fun onFailure(throwable: Throwable) {
-            if (debug) {
-                Log.e(TAG, "Failed to write log", throwable)
-            }
-        }
     }
 
     companion object {

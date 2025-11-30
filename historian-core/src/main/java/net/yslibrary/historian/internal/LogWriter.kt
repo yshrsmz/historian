@@ -31,7 +31,7 @@ class LogWriter(
      */
     fun delete() {
         dbOpenHelper.executeTransaction { db ->
-            db.delete(LogTable.NAME, null, emptyArray())
+            db.delete(LogTable.NAME, null, null)
         }
     }
 }

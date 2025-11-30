@@ -2,8 +2,6 @@ package net.yslibrary.historian
 
 import android.util.Log
 import androidx.test.core.app.ApplicationProvider
-import org.hamcrest.CoreMatchers.instanceOf
-import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -36,7 +34,6 @@ class HistorianBuilderTest {
         assertEquals(Historian.DB_NAME, historian.dbName)
         assertEquals(Historian.SIZE, historian.size)
         assertFalse(historian.debug)
-        assertThat(historian.callbacks, instanceOf(Historian.DefaultCallbacks::class.java))
     }
 
     @Test
@@ -59,7 +56,6 @@ class HistorianBuilderTest {
         assertEquals("test.db", historian.dbName)
         assertEquals(1000, historian.size)
         assertTrue(historian.debug)
-        assertThat(historian.callbacks, instanceOf(TestCallbacks::class.java))
     }
 
     @Test

@@ -18,6 +18,17 @@ class HistorianTree private constructor(
 }
 
 /**
- * Extension function to create a Timber.Tree from a Historian instance
+ * Extension function to create a Timber.Tree from a Historian instance.
+ *
+ * Usage in Kotlin:
+ * ```
+ * Timber.plant(historian.toTree())
+ * ```
+ *
+ * Usage in Java:
+ * ```
+ * Timber.plant(HistorianTreeKt.toTimberTree(historian));
+ * ```
  */
-fun Historian.asTimberTree(): Timber.Tree = HistorianTree.with(this)
+@JvmName("toTimberTree")
+fun Historian.toTree(): Timber.Tree = HistorianTree.with(this)
