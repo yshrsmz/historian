@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.1](https://github.com/yshrsmz/historian/compare/historian-v0.6.0...historian-v0.6.1) (2025-12-12)
+
+
+### Dependencies
+
+* update agp to v8.13.2 ([#37](https://github.com/yshrsmz/historian/issues/37)) ([7f2060b](https://github.com/yshrsmz/historian/commit/7f2060bf9a6b7bc1e0975eb18e1d7381777ca2f0))
+
 ## [0.6.0](https://github.com/yshrsmz/historian/compare/historian-v0.5.0...historian-v0.6.0) (2025-11-30)
 
 
