@@ -20,7 +20,7 @@ timber = "5.0.1"
 
 # Testing
 junit = "4.13.2"
-robolectric = "4.16"
+robolectric = "4.16.1"
 
 # Tools
 jacoco = "0.8.12"
