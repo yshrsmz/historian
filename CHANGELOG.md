@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.2](https://github.com/yshrsmz/historian/compare/historian-v0.6.1...historian-v0.6.2) (2026-02-07)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.robolectric:robolectric to v4.16.1 ([#43](https://github.com/yshrsmz/historian/issues/43)) ([959c381](https://github.com/yshrsmz/historian/commit/959c38168f316c31d429390886946102c2ec60b6))
+
 ## [0.6.1](https://github.com/yshrsmz/historian/compare/historian-v0.6.0...historian-v0.6.1) (2025-12-17)
 
 
