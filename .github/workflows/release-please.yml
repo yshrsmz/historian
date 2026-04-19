@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   release-please:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - name: Generate GitHub App token
         id: generate-token
