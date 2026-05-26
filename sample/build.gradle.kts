@@ -10,7 +10,9 @@ android {
 
     defaultConfig {
         applicationId = "net.yslibrary.historian.sample"
-        minSdk = libs.versions.minSdk.get().toInt()
+        // Material 1.14.0+ requires minSdk 23. Only the sample app depends on Material;
+        // the published library modules stay at libs.versions.minSdk (21).
+        minSdk = 23
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
