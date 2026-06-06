@@ -18,7 +18,7 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - uses: yshrsmz/action-mise-values@bbf51a0cc5792662fd3e97a1ca453c036969dd3e # v0.2.5
+    - uses: yshrsmz/action-mise-values@670739629b870d0f845327d27cdf044f835bbe7d # v0.3.0
       id: mise
 
     - name: 'format value for actions/setup-java'
