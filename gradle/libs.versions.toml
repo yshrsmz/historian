@@ -6,7 +6,7 @@ targetSdk = "35"
 
 # Plugins
 agp = "9.2.1"
-kotlin = "2.3.21"
+kotlin = "2.4.0"
 mavenPublish = "0.36.0"
 
 # AndroidX
