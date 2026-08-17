@@ -1,5 +1,5 @@
 [tools]
-java = "temurin-17.0.20+8"
+java = "temurin-25.0.4+7.0.LTS"
 
 [env]
 # Ruby environment variables if needed
