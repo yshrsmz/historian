@@ -33,6 +33,11 @@ runs:
         DISTRIBUTION=$(echo "$JAVA_VERSION_STRING" | cut -d'-' -f1)
         # Extract version (everything after the dash)
         VERSION=$(echo "$JAVA_VERSION_STRING" | cut -d'-' -f2-)
+        # Drop build metadata (everything from '+'). actions/setup-java demands an
+        # exact match when build metadata is present, but Adoptium's published
+        # version list does not carry the same suffix. Without metadata setup-java
+        # resolves via semver.satisfies, which still pins major.minor.patch.
+        VERSION="${VERSION%%+*}"
 
         echo "distribution=$DISTRIBUTION" >> "$GITHUB_OUTPUT"
         echo "version=$VERSION" >> "$GITHUB_OUTPUT"
