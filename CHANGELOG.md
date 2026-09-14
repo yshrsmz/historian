@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.2](https://github.com/yshrsmz/historian/compare/historian-v0.6.1...historian-v0.6.2) (2026-09-10)
+
+
+### Bug Fixes
+
+* **deps:** update dependency androidx.annotation:annotation to v1.10.0 ([#59](https://github.com/yshrsmz/historian/issues/59)) ([ef7363c](https://github.com/yshrsmz/historian/commit/ef7363c52048bf3fe65cc2eb37b278186bdfe86f))
+* **deps:** update dependency androidx.appcompat:appcompat to v1.8.0 ([#92](https://github.com/yshrsmz/historian/issues/92)) ([a1cd7e5](https://github.com/yshrsmz/historian/commit/a1cd7e53625a26b36222c4ed0180d5613fa90452))
+* **deps:** update dependency com.google.android.material:material to v1.14.0 ([#71](https://github.com/yshrsmz/historian/issues/71)) ([8793651](https://github.com/yshrsmz/historian/commit/879365109e0601a03d23f2b73d4b30785692fe99))
+* **deps:** update dependency org.jetbrains.kotlin.android to v2.4.10 ([#81](https://github.com/yshrsmz/historian/issues/81)) ([ae77cb1](https://github.com/yshrsmz/historian/commit/ae77cb1bc94b6b1d48fede76228d01084c564c49))
+* **deps:** update dependency org.robolectric:robolectric to v4.16.1 ([#43](https://github.com/yshrsmz/historian/issues/43)) ([959c381](https://github.com/yshrsmz/historian/commit/959c38168f316c31d429390886946102c2ec60b6))
+
 ## [0.6.1](https://github.com/yshrsmz/historian/compare/historian-v0.6.0...historian-v0.6.1) (2025-12-17)
 
 
