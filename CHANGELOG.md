@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.3](https://github.com/yshrsmz/historian/compare/historian-v0.6.2...historian-v0.6.3) (2026-10-09)
+
+
+### Bug Fixes
+
+* **deps:** update dependency androidx.annotation:annotation to v1.11.0 ([#103](https://github.com/yshrsmz/historian/issues/103)) ([1ef702b](https://github.com/yshrsmz/historian/commit/1ef702bc161ec51b873744044d052e52c62784f3))
+* **deps:** update dependency org.jetbrains.kotlin.android to v2.4.20 ([#98](https://github.com/yshrsmz/historian/issues/98)) ([056c768](https://github.com/yshrsmz/historian/commit/056c768504971d55cb9679fdadb1fda5d1b84576))
+* **deps:** update dependency org.robolectric:robolectric to v4.17 ([#100](https://github.com/yshrsmz/historian/issues/100)) ([59604ca](https://github.com/yshrsmz/historian/commit/59604ca2e68496ac808e35e4fe80d6bd613c5bcb))
+
 ## [0.6.2](https://github.com/yshrsmz/historian/compare/historian-v0.6.1...historian-v0.6.2) (2026-09-10)
 
 
