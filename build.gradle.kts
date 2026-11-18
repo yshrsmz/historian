@@ -12,6 +12,6 @@ tasks.register<Delete>("clean") {
 }
 
 tasks.wrapper {
-    gradleVersion = "9.9.0"
+    gradleVersion = "9.9.1"
     distributionType = Wrapper.DistributionType.ALL
 }
