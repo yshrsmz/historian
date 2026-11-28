@@ -109,7 +109,7 @@ class HistorianTest {
     }
 
     @Test
-    @Config(sdk = [23, 28, 33, 35])
+    @Config(sdk = [24, 28, 33, 35])
     fun `log background`() {
         val expectedLogs = 10
         val latch = CountDownLatch(expectedLogs)
